@@ -24,3 +24,6 @@ TRIPLET_ALPHA = 0.1
 
 # How many triplets do we train in a single batch.
 BATCH_SIZE = 8
+
+# Learning rate
+LEARNING_RATE = 0.0001

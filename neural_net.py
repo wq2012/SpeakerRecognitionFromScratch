@@ -13,7 +13,7 @@ class SpeakerEncoder(nn.Module):
 
     def __init__(self):
         super(SpeakerEncoder, self).__init__()
-        # Define the RNN layer and a final linear layer
+        # Define the LSTM network.
         self.lstm = nn.LSTM(
             input_size=myconfig.N_MFCC,
             hidden_size=myconfig.LSTM_HIDDEN_SIZE,
@@ -45,7 +45,7 @@ def train_network(num_steps, saved_model):
     encoder = SpeakerEncoder()
 
     # Train
-    optimizer = optim.Adam(encoder.parameters(), lr=0.1)
+    optimizer = optim.Adam(encoder.parameters(), lr=myconfig.LEARNING_RATE)
     print("Start training")
     for step in range(num_steps):
         optimizer.zero_grad()
@@ -83,7 +83,7 @@ def train_network(num_steps, saved_model):
 
 
 def main():
-    losses = train_network(10, myconfig.SAVED_MODEL_PATH)
+    losses = train_network(1000, myconfig.SAVED_MODEL_PATH)
     plt.plot(losses)
     plt.xlabel("step")
     plt.ylabel("loss")
