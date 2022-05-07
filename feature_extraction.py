@@ -45,6 +45,25 @@ def get_triplet_features(spk_to_utts):
             extract_features(neg_utt))
 
 
+def get_trimmed_features(features):
+    """Trim features to SEQ_LEN."""
+    full_length = features.shape[1]
+    start = random.randint(0, full_length - myconfig.SEQ_LEN)
+    return features[:, start: start + myconfig.SEQ_LEN]
+
+
+def get_triplet_features_trimmed(spk_to_utts):
+    """Get a triplet of trimmed anchor/pos/neg features."""
+    anchor, pos, neg = get_triplet_features(spk_to_utts)
+    while (anchor.shape[1] < myconfig.SEQ_LEN or
+           pos.shape[1] < myconfig.SEQ_LEN or
+           neg.shape[1] < myconfig.SEQ_LEN):
+        anchor, pos, neg = get_triplet_features(spk_to_utts)
+    return (get_trimmed_features(anchor),
+            get_trimmed_features(pos),
+            get_trimmed_features(neg))
+
+
 def main():
     features = extract_features(os.path.join(
         myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
