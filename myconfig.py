@@ -17,4 +17,4 @@ LSTM_NUM_LAYERS = 3
 SEQ_LEN = 100  # 3.2 seconds
 
 # Alpha for the triplet loss.
-TRIPLET_ALPHA = 0.2
+TRIPLET_ALPHA = 0.1

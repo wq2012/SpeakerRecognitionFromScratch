@@ -2,8 +2,9 @@ import librosa
 import soundfile as sf
 import os
 import glob
-import myconfig
 import random
+
+import myconfig
 
 
 def extract_features(flac_file):
@@ -45,7 +46,7 @@ def get_triplet_features(spk_to_utts):
             extract_features(neg_utt))
 
 
-def get_trimmed_features(features):
+def trim_features(features):
     """Trim features to SEQ_LEN."""
     full_length = features.shape[1]
     start = random.randint(0, full_length - myconfig.SEQ_LEN)
@@ -59,9 +60,9 @@ def get_triplet_features_trimmed(spk_to_utts):
            pos.shape[1] < myconfig.SEQ_LEN or
            neg.shape[1] < myconfig.SEQ_LEN):
         anchor, pos, neg = get_triplet_features(spk_to_utts)
-    return (get_trimmed_features(anchor),
-            get_trimmed_features(pos),
-            get_trimmed_features(neg))
+    return (trim_features(anchor),
+            trim_features(pos),
+            trim_features(neg))
 
 
 def main():
