@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 import feature_extraction
 import neural_net
@@ -15,4 +16,8 @@ def load_saved_model(saved_model):
 
 def run_inference(features, encoder):
     """Get the embedding of an utterance using the encoder."""
-    pass
+    sliding_windows = feature_extraction.extract_sliding_windows(features)
+    batch_input = torch.from_numpy(np.stack(sliding_windows)).float()
+    batch_output = encoder(batch_input)[:, -1, :]
+    aggregated_output = torch.mean(batch_output, dim=0, keepdim=False)
+    return aggregated_output.data.numpy()

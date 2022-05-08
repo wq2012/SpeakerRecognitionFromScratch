@@ -5,6 +5,7 @@ import numpy as np
 
 import feature_extraction
 import neural_net
+import evaluation
 import myconfig
 
 
@@ -17,6 +18,14 @@ class TestFeatureExtraction(unittest.TestCase):
         features = feature_extraction.extract_features(os.path.join(
             myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
         self.assertEqual(features.shape, (154, myconfig.N_MFCC))
+
+    def test_extract_sliding_windows(self):
+        features = feature_extraction.extract_features(os.path.join(
+            myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
+        sliding_windows = feature_extraction.extract_sliding_windows(features)
+        self.assertEqual(len(sliding_windows), 2)
+        self.assertEqual(sliding_windows[0].shape,
+                         (myconfig.SEQ_LEN, myconfig.N_MFCC))
 
     def test_get_spk_to_utts(self):
         self.assertEqual(len(self.spk_to_utts.keys()), myconfig.N_MFCC)
@@ -105,8 +114,19 @@ class TestNeuralNet(unittest.TestCase):
         self.assertAlmostEqual(loss_value, 1 + myconfig.TRIPLET_ALPHA)
 
     def test_train_network(self):
-        losses = neural_net.train_network(num_steps=5)
-        self.assertEqual(len(losses), 5)
+        losses = neural_net.train_network(num_steps=2)
+        self.assertEqual(len(losses), 2)
+
+
+class TestEvaluation(unittest.TestCase):
+    def setUp(self):
+        self.encoder = neural_net.SpeakerEncoder()
+
+    def test_run_inference(self):
+        features = feature_extraction.extract_features(os.path.join(
+            myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
+        embedding = evaluation.run_inference(features, self.encoder)
+        self.assertEqual(embedding.shape, (myconfig.LSTM_HIDDEN_SIZE,))
 
 
 if __name__ == "__main__":

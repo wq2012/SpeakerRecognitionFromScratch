@@ -10,11 +10,21 @@ import myconfig
 
 
 def extract_features(flac_file):
-    """Extract MFCC features from a flac file."""
+    """Extract MFCC features from a flac file, shape=(TIME, MFCC)."""
     waveform, sample_rate = sf.read(flac_file)
     features = librosa.feature.mfcc(
         y=waveform, sr=sample_rate, n_mfcc=myconfig.N_MFCC)
     return features.transpose()
+
+
+def extract_sliding_windows(features):
+    """Extract sliding windows from features."""
+    sliding_windows = []
+    start = 0
+    while start + myconfig.SEQ_LEN <= features.shape[0]:
+        sliding_windows.append(features[start: start + myconfig.SEQ_LEN, :])
+        start += myconfig.SLIDING_WINDOW_STEP
+    return sliding_windows
 
 
 def get_spk_to_utts(data_dir):

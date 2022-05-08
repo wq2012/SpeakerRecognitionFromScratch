@@ -16,8 +16,11 @@ LSTM_HIDDEN_SIZE = 64
 # Number of LSTM layers.
 LSTM_NUM_LAYERS = 3
 
-# Sequence length for LSTM.
+# Sequence length of the sliding window for LSTM.
 SEQ_LEN = 100  # 3.2 seconds
+
+# Sliding window step for LSTM inference.
+SLIDING_WINDOW_STEP = 50  # 1.6 seconds
 
 # Alpha for the triplet loss.
 TRIPLET_ALPHA = 0.1
