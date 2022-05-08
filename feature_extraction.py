@@ -3,6 +3,8 @@ import soundfile as sf
 import os
 import glob
 import random
+import torch
+import numpy as np
 
 import myconfig
 
@@ -63,6 +65,18 @@ def get_triplet_features_trimmed(spk_to_utts):
     return (trim_features(anchor),
             trim_features(pos),
             trim_features(neg))
+
+
+def get_batched_triplet_input(spk_to_utts, batch_size):
+    """Get batched triplet input for PyTorch."""
+    input_arrays = []
+    for _ in range(batch_size):
+        anchor, pos, neg = get_triplet_features_trimmed(
+            spk_to_utts)
+        input_arrays += [anchor.transpose(), pos.transpose(),
+                         neg.transpose()]
+    batch_input = torch.from_numpy(np.stack(input_arrays)).float()
+    return batch_input
 
 
 def main():

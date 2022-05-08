@@ -29,7 +29,7 @@ class SpeakerEncoder(nn.Module):
         return y
 
 
-def my_triplet(anchor, pos, neg):
+def get_triplet_loss(anchor, pos, neg):
     """Triplet loss defined in https://arxiv.org/pdf/1705.02304.pdf."""
     cos = nn.CosineSimilarity(dim=0, eps=1e-6)
     return torch.maximum(
@@ -37,7 +37,20 @@ def my_triplet(anchor, pos, neg):
         torch.tensor(0.0))
 
 
-def train_network(num_steps, saved_model):
+def get_triplet_loss_from_batch_output(batch_output, batch_size):
+    """Triplet loss from N*(a|p|n) batch output."""
+    triplet_losses = []
+    for i in range(batch_size):
+        single_triplet_loss = get_triplet_loss(
+            batch_output[i * 3, :],
+            batch_output[i * 3 + 1, :],
+            batch_output[i * 3 + 2, :])
+        triplet_losses.append(single_triplet_loss)
+    loss = torch.mean(torch.stack(triplet_losses))
+    return loss
+
+
+def train_network(num_steps, saved_model=None):
     start_time = time.time()
     losses = []
     spk_to_utts = feature_extraction.get_spk_to_utts(myconfig.TRAIN_DATA_DIR)
@@ -51,23 +64,13 @@ def train_network(num_steps, saved_model):
         optimizer.zero_grad()
 
         # Build batched input.
-        input_arrays = []
-        for _ in range(myconfig.BATCH_SIZE):
-            anchor, pos, neg = feature_extraction.get_triplet_features_trimmed(
-                spk_to_utts)
-            input_arrays += [anchor.transpose(), pos.transpose(),
-                             neg.transpose()]
-        batch_input = torch.from_numpy(np.stack(input_arrays)).float()
+        batch_input = feature_extraction.get_batched_triplet_input(
+            spk_to_utts, myconfig.BATCH_SIZE)
 
         # Compute loss.
         batch_output = encoder(batch_input)[:, -1, :]
-        loss = torch.tensor(0.0)
-        for batch in range(myconfig.BATCH_SIZE):
-            loss += my_triplet(
-                batch_output[batch * 3, :],
-                batch_output[batch * 3 + 1, :],
-                batch_output[batch * 3 + 2, :])
-
+        loss = get_triplet_loss_from_batch_output(
+            batch_output, myconfig.BATCH_SIZE)
         loss.backward()
         optimizer.step()
         losses.append(loss.item())
@@ -75,15 +78,16 @@ def train_network(num_steps, saved_model):
 
     training_time = time.time() - start_time
     print("finished training in", training_time, "seconds")
-    torch.save({"encoder_state_dict": encoder.state_dict(),
-                "losses": losses,
-                "training_time": training_time},
-               saved_model)
+    if saved_model is not None:
+        torch.save({"encoder_state_dict": encoder.state_dict(),
+                    "losses": losses,
+                    "training_time": training_time},
+                   saved_model)
     return losses
 
 
 def main():
-    losses = train_network(1000, myconfig.SAVED_MODEL_PATH)
+    losses = train_network(20000, myconfig.SAVED_MODEL_PATH)
     plt.plot(losses)
     plt.xlabel("step")
     plt.ylabel("loss")
