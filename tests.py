@@ -128,6 +128,35 @@ class TestEvaluation(unittest.TestCase):
         embedding = evaluation.run_inference(features, self.encoder)
         self.assertEqual(embedding.shape, (myconfig.LSTM_HIDDEN_SIZE,))
 
+    def test_cosine_similarity(self):
+        a = np.array([0.6, 0.8, 0.0])
+        b = np.array([0.6, 0.8, 0.0])
+        self.assertAlmostEqual(1.0, evaluation.cosine_similarity(a, b))
+
+        a = np.array([0.6, 0.8, 0.0])
+        b = np.array([0.8, -0.6, 0.0])
+        self.assertAlmostEqual(0.0, evaluation.cosine_similarity(a, b))
+
+        a = np.array([0.6, 0.8, 0.0])
+        b = np.array([0.8, 0.6, 0.0])
+        self.assertAlmostEqual(0.96, evaluation.cosine_similarity(a, b))
+
+        a = np.array([0.6, 0.8, 0.0])
+        b = np.array([0.0, 0.8, -0.6])
+        self.assertAlmostEqual(0.64, evaluation.cosine_similarity(a, b))
+
+    def test_compute_scores(self):
+        labels, scores = evaluation.compute_scores(self.encoder, 3)
+        self.assertListEqual(labels, [1, 0, 1, 0, 1, 0])
+        self.assertEqual(len(scores), 6)
+
+    def test_compute_eer(self):
+        labels = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]
+        scores = [0.2, 0.3, 0.4, 0.59, 0.6, 0.588, 0.602, 0.7, 0.8, 0.9]
+        eer, eer_threshold = evaluation.compute_eer(labels, scores)
+        self.assertAlmostEqual(eer, 0.2)
+        self.assertAlmostEqual(eer_threshold, 0.59)
+
 
 if __name__ == "__main__":
     unittest.main()

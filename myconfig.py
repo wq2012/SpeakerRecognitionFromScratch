@@ -33,3 +33,6 @@ LEARNING_RATE = 0.0001
 
 # Number of triplets to evaluate for computing Equal Error Rate (EER).
 NUM_EVAL_TRIPLETS = 1000
+
+# Step of threshold sweeping for computing Equal Error Rate (EER).
+EVAL_THRESHOLD_STEP = 0.001
