@@ -5,7 +5,7 @@ TRAIN_DATA_DIR = "/home/quan/Code/github/SpeakerRecognitionFromScratch/data/Libr
 TEST_DATA_DIR = "/home/quan/Code/github/SpeakerRecognitionFromScratch/data/LibriSpeech/test-clean"
 
 # Path of save model.
-SAVED_MODEL_PATH = "/home/quan/Code/github/SpeakerRecognitionFromScratch/data/saved_model.pt"
+SAVED_MODEL_PATH = "/home/quan/Code/github/SpeakerRecognitionFromScratch/saved_model/saved_model.pt"
 
 # Number of MFCCs for librosa.feature.mfcc.
 N_MFCC = 40
@@ -25,5 +25,8 @@ TRIPLET_ALPHA = 0.1
 # How many triplets do we train in a single batch.
 BATCH_SIZE = 8
 
-# Learning rate
+# Learning rate.
 LEARNING_RATE = 0.0001
+
+# Number of triplets to evaluate for computing Equal Error Rate (EER).
+NUM_EVAL_TRIPLETS = 1000

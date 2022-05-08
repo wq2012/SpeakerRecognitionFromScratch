@@ -87,7 +87,7 @@ def train_network(num_steps, saved_model=None):
 
 
 def main():
-    losses = train_network(20000, myconfig.SAVED_MODEL_PATH)
+    losses = train_network(50000, myconfig.SAVED_MODEL_PATH)
     plt.plot(losses)
     plt.xlabel("step")
     plt.ylabel("loss")

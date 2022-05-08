@@ -14,7 +14,7 @@ def extract_features(flac_file):
     waveform, sample_rate = sf.read(flac_file)
     features = librosa.feature.mfcc(
         y=waveform, sr=sample_rate, n_mfcc=myconfig.N_MFCC)
-    return features
+    return features.transpose()
 
 
 def get_spk_to_utts(data_dir):
@@ -50,17 +50,17 @@ def get_triplet_features(spk_to_utts):
 
 def trim_features(features):
     """Trim features to SEQ_LEN."""
-    full_length = features.shape[1]
+    full_length = features.shape[0]
     start = random.randint(0, full_length - myconfig.SEQ_LEN)
-    return features[:, start: start + myconfig.SEQ_LEN]
+    return features[start: start + myconfig.SEQ_LEN, :]
 
 
 def get_triplet_features_trimmed(spk_to_utts):
     """Get a triplet of trimmed anchor/pos/neg features."""
     anchor, pos, neg = get_triplet_features(spk_to_utts)
-    while (anchor.shape[1] < myconfig.SEQ_LEN or
-           pos.shape[1] < myconfig.SEQ_LEN or
-           neg.shape[1] < myconfig.SEQ_LEN):
+    while (anchor.shape[0] < myconfig.SEQ_LEN or
+           pos.shape[0] < myconfig.SEQ_LEN or
+           neg.shape[0] < myconfig.SEQ_LEN):
         anchor, pos, neg = get_triplet_features(spk_to_utts)
     return (trim_features(anchor),
             trim_features(pos),
@@ -73,8 +73,7 @@ def get_batched_triplet_input(spk_to_utts, batch_size):
     for _ in range(batch_size):
         anchor, pos, neg = get_triplet_features_trimmed(
             spk_to_utts)
-        input_arrays += [anchor.transpose(), pos.transpose(),
-                         neg.transpose()]
+        input_arrays += [anchor, pos, neg]
     batch_input = torch.from_numpy(np.stack(input_arrays)).float()
     return batch_input
 

@@ -16,7 +16,7 @@ class TestFeatureExtraction(unittest.TestCase):
     def test_extract_features(self):
         features = feature_extraction.extract_features(os.path.join(
             myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
-        self.assertEqual(features.shape, (myconfig.N_MFCC, 154))
+        self.assertEqual(features.shape, (154, myconfig.N_MFCC))
 
     def test_get_spk_to_utts(self):
         self.assertEqual(len(self.spk_to_utts.keys()), myconfig.N_MFCC)
@@ -41,16 +41,16 @@ class TestFeatureExtraction(unittest.TestCase):
     def test_get_triplet_features(self):
         anchor, pos, neg = feature_extraction.get_triplet_features(
             self.spk_to_utts)
-        self.assertEqual(anchor.shape[0], myconfig.N_MFCC)
-        self.assertEqual(pos.shape[0], myconfig.N_MFCC)
-        self.assertEqual(neg.shape[0], myconfig.N_MFCC)
+        self.assertEqual(myconfig.N_MFCC, anchor.shape[1])
+        self.assertEqual(myconfig.N_MFCC, pos.shape[1])
+        self.assertEqual(myconfig.N_MFCC, neg.shape[1])
 
     def test_get_triplet_features_trimmed(self):
         anchor, pos, neg = feature_extraction.get_triplet_features_trimmed(
             self.spk_to_utts)
-        self.assertEqual(anchor.shape, (myconfig.N_MFCC, myconfig.SEQ_LEN))
-        self.assertEqual(pos.shape, (myconfig.N_MFCC, myconfig.SEQ_LEN))
-        self.assertEqual(neg.shape, (myconfig.N_MFCC, myconfig.SEQ_LEN))
+        self.assertEqual(anchor.shape, (myconfig.SEQ_LEN, myconfig.N_MFCC))
+        self.assertEqual(pos.shape, (myconfig.SEQ_LEN, myconfig.N_MFCC))
+        self.assertEqual(neg.shape, (myconfig.SEQ_LEN, myconfig.N_MFCC))
 
     def test_get_batched_triplet_input(self):
         batch_input = feature_extraction.get_batched_triplet_input(
