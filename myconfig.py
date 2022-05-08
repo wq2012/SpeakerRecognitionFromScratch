@@ -39,6 +39,12 @@ BATCH_SIZE = 8
 # Learning rate.
 LEARNING_RATE = 0.0001
 
+# Save a model to disk every these many steps.
+SAVE_MODEL_FREQUENCY = 10000
+
+# Number of steps to train.
+TRAINING_STEPS = 50000
+
 # Number of triplets to evaluate for computing Equal Error Rate (EER).
 NUM_EVAL_TRIPLETS = 1000
 

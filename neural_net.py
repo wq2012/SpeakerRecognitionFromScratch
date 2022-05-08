@@ -53,6 +53,16 @@ def get_triplet_loss_from_batch_output(batch_output, batch_size):
     return loss
 
 
+def save_model(saved_model_path, encoder, losses, start_time):
+    """Save model to disk."""
+    training_time = time.time() - start_time
+    os.makedirs(os.path.dirname(saved_model_path), exist_ok=True)
+    torch.save({"encoder_state_dict": encoder.state_dict(),
+                "losses": losses,
+                "training_time": training_time},
+               saved_model_path)
+
+
 def train_network(num_steps, saved_model=None):
     start_time = time.time()
     losses = []
@@ -79,19 +89,20 @@ def train_network(num_steps, saved_model=None):
         losses.append(loss.item())
         print("step:", step, "loss:", loss.item())
 
+        if (saved_model is not None and
+                (step + 1) % myconfig.SAVE_MODEL_FREQUENCY == 0):
+            save_model(saved_model + "-" + str(step + 1),
+                       encoder, losses, start_time)
+
     training_time = time.time() - start_time
     print("finished training in", training_time, "seconds")
     if saved_model is not None:
-        os.makedirs(os.path.dirname(saved_model), exist_ok=True)
-        torch.save({"encoder_state_dict": encoder.state_dict(),
-                    "losses": losses,
-                    "training_time": training_time},
-                   saved_model)
+        save_model(saved_model, encoder, losses, start_time)
     return losses
 
 
 def run_training():
-    losses = train_network(50000, myconfig.SAVED_MODEL_PATH)
+    losses = train_network(myconfig.TRAINING_STEPS, myconfig.SAVED_MODEL_PATH)
     plt.plot(losses)
     plt.xlabel("step")
     plt.ylabel("loss")
