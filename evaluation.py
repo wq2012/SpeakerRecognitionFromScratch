@@ -22,7 +22,7 @@ def run_inference(features, encoder):
     batch_input = torch.from_numpy(
         np.stack(sliding_windows)).float().to(myconfig.DEVICE)
     batch_output = encoder(batch_input)[:, -1, :]
-    aggregated_output = torch.mean(batch_output, dim=0, keepdim=False)
+    aggregated_output = torch.mean(batch_output, dim=0, keepdim=False).cpu()
     return aggregated_output.data.numpy()
 
 

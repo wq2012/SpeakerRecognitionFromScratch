@@ -23,9 +23,11 @@ class SpeakerEncoder(nn.Module):
 
     def forward(self, x):
         h0 = torch.zeros(
-            myconfig.LSTM_NUM_LAYERS, x.shape[0],  myconfig.LSTM_HIDDEN_SIZE)
+            myconfig.LSTM_NUM_LAYERS, x.shape[0],  myconfig.LSTM_HIDDEN_SIZE
+        ).to(myconfig.DEVICE)
         c0 = torch.zeros(
-            myconfig.LSTM_NUM_LAYERS, x.shape[0], myconfig.LSTM_HIDDEN_SIZE)
+            myconfig.LSTM_NUM_LAYERS, x.shape[0], myconfig.LSTM_HIDDEN_SIZE
+        ).to(myconfig.DEVICE)
         y, (hn, cn) = self.lstm(x, (h0, c0))
         return y
 
