@@ -8,7 +8,7 @@ import myconfig
 
 def load_saved_model(saved_model):
     """Load the saved model."""
-    encoder = neural_net.SpeakerEncoder()
+    encoder = neural_net.SpeakerEncoder().to(myconfig.DEVICE)
     var_dict = torch.load(saved_model)
     encoder.load_state_dict(var_dict["encoder_state_dict"])
     return encoder
@@ -19,7 +19,8 @@ def run_inference(features, encoder):
     sliding_windows = feature_extraction.extract_sliding_windows(features)
     if not sliding_windows:
         return None
-    batch_input = torch.from_numpy(np.stack(sliding_windows)).float()
+    batch_input = torch.from_numpy(
+        np.stack(sliding_windows)).float().to(myconfig.DEVICE)
     batch_output = encoder(batch_input)[:, -1, :]
     aggregated_output = torch.mean(batch_output, dim=0, keepdim=False)
     return aggregated_output.data.numpy()

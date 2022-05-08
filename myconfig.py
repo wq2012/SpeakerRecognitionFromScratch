@@ -1,11 +1,19 @@
 # This file has the configurations of the experiments.
+import os
+import torch
 
 # Path of downloaded LibriSpeech datasets.
-TRAIN_DATA_DIR = "/home/quan/Code/github/SpeakerRecognitionFromScratch/data/LibriSpeech/train-clean-100"
-TEST_DATA_DIR = "/home/quan/Code/github/SpeakerRecognitionFromScratch/data/LibriSpeech/test-clean"
+TRAIN_DATA_DIR = os.path.join(
+    os.path.expanduser("~"),
+    "Code/github/SpeakerRecognitionFromScratch/data/LibriSpeech/train-clean-100")
+TEST_DATA_DIR = os.path.join(
+    os.path.expanduser("~"),
+    "Code/github/SpeakerRecognitionFromScratch/data/LibriSpeech/test-clean")
 
 # Path of save model.
-SAVED_MODEL_PATH = "/home/quan/Code/github/SpeakerRecognitionFromScratch/saved_model/saved_model.pt"
+SAVED_MODEL_PATH = os.path.join(
+    os.path.expanduser("~"),
+    "Code/github/SpeakerRecognitionFromScratch/saved_model/saved_model.pt")
 
 # Number of MFCCs for librosa.feature.mfcc.
 N_MFCC = 40
@@ -36,3 +44,6 @@ NUM_EVAL_TRIPLETS = 1000
 
 # Step of threshold sweeping for computing Equal Error Rate (EER).
 EVAL_THRESHOLD_STEP = 0.001
+
+# Wehther to use GPU or CPU.
+DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

@@ -1,3 +1,4 @@
+import os
 import time
 import torch
 import torch.nn as nn
@@ -55,7 +56,7 @@ def train_network(num_steps, saved_model=None):
     losses = []
     spk_to_utts = feature_extraction.get_spk_to_utts(myconfig.TRAIN_DATA_DIR)
 
-    encoder = SpeakerEncoder()
+    encoder = SpeakerEncoder().to(myconfig.DEVICE)
 
     # Train
     optimizer = optim.Adam(encoder.parameters(), lr=myconfig.LEARNING_RATE)
@@ -65,7 +66,7 @@ def train_network(num_steps, saved_model=None):
 
         # Build batched input.
         batch_input = feature_extraction.get_batched_triplet_input(
-            spk_to_utts, myconfig.BATCH_SIZE)
+            spk_to_utts, myconfig.BATCH_SIZE).to(myconfig.DEVICE)
 
         # Compute loss.
         batch_output = encoder(batch_input)[:, -1, :]
@@ -79,6 +80,7 @@ def train_network(num_steps, saved_model=None):
     training_time = time.time() - start_time
     print("finished training in", training_time, "seconds")
     if saved_model is not None:
+        os.makedirs(os.path.dirname(saved_model), exist_ok=True)
         torch.save({"encoder_state_dict": encoder.state_dict(),
                     "losses": losses,
                     "training_time": training_time},

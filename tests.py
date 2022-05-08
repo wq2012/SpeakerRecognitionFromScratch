@@ -71,7 +71,7 @@ class TestFeatureExtraction(unittest.TestCase):
 class TestNeuralNet(unittest.TestCase):
 
     def setUp(self):
-        self.encoder = neural_net.SpeakerEncoder()
+        self.encoder = neural_net.SpeakerEncoder().to(myconfig.DEVICE)
 
     def test_get_triplet_loss1(self):
         anchor = torch.tensor([0.0, 1.0])
@@ -120,7 +120,7 @@ class TestNeuralNet(unittest.TestCase):
 
 class TestEvaluation(unittest.TestCase):
     def setUp(self):
-        self.encoder = neural_net.SpeakerEncoder()
+        self.encoder = neural_net.SpeakerEncoder().to(myconfig.DEVICE)
 
     def test_run_inference(self):
         features = feature_extraction.extract_features(os.path.join(
