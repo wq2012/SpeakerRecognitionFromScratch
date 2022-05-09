@@ -9,7 +9,7 @@ import myconfig
 def load_saved_model(saved_model):
     """Load the saved model."""
     encoder = neural_net.SpeakerEncoder().to(myconfig.DEVICE)
-    var_dict = torch.load(saved_model)
+    var_dict = torch.load(saved_model, map_location=myconfig.DEVICE)
     encoder.load_state_dict(var_dict["encoder_state_dict"])
     return encoder
 
