@@ -87,7 +87,7 @@ def train_network(num_steps, saved_model=None):
         loss.backward()
         optimizer.step()
         losses.append(loss.item())
-        print("step:", step, "loss:", loss.item())
+        print("step:", step, "/", num_steps, "loss:", loss.item())
 
         if (saved_model is not None and
                 (step + 1) % myconfig.SAVE_MODEL_FREQUENCY == 0):
