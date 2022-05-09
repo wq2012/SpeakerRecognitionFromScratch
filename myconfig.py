@@ -46,6 +46,8 @@ SAVE_MODEL_FREQUENCY = 10000
 TRAINING_STEPS = 50000
 
 # Number of triplets to evaluate for computing Equal Error Rate (EER).
+# Both the number of positive trials and number of negative trials will be
+# equal to this number.
 NUM_EVAL_TRIPLETS = 1000
 
 # Step of threshold sweeping for computing Equal Error Rate (EER).
