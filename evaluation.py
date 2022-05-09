@@ -52,7 +52,7 @@ def compute_scores(encoder, num_eval_triplets=myconfig.NUM_EVAL_TRIPLETS):
         labels.append(0)
         scores.append(cosine_similarity(anchor_embedding, neg_embedding))
         triplets_evaluated += 1
-        print("triplets evaluated:", triplets_evaluated)
+        print("triplets evaluated:", triplets_evaluated, "/", num_eval_triplets)
     return (labels, scores)
 
 
