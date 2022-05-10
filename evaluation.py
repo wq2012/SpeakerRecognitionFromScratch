@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import multiprocessing
 
+import dataset
 import feature_extraction
 import neural_net
 import myconfig
@@ -106,11 +107,11 @@ def compute_eer(labels, scores):
 def run_eval():
     """Run evaluation of the saved model on test data."""
     if myconfig.TEST_DATA_CSV:
-        spk_to_utts = feature_extraction.get_csv_spk_to_utts(
+        spk_to_utts = dataset.get_csv_spk_to_utts(
             myconfig.TEST_DATA_CSV)
         print("Evaluation data:", myconfig.TEST_DATA_CSV)
     else:
-        spk_to_utts = feature_extraction.get_librispeech_spk_to_utts(
+        spk_to_utts = dataset.get_librispeech_spk_to_utts(
             myconfig.TEST_DATA_DIR)
         print("Evaluation data:", myconfig.TEST_DATA_DIR)
     encoder = load_saved_model(myconfig.SAVED_MODEL_PATH)

@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import multiprocessing
 
+import dataset
 import feature_extraction
 import myconfig
 
@@ -115,11 +116,11 @@ def train_network(spk_to_utts, num_steps, saved_model=None, pool=None):
 
 def run_training():
     if myconfig.TRAIN_DATA_CSV:
-        spk_to_utts = feature_extraction.get_csv_spk_to_utts(
+        spk_to_utts = dataset.get_csv_spk_to_utts(
             myconfig.TRAIN_DATA_CSV)
         print("Training data:", myconfig.TRAIN_DATA_CSV)
     else:
-        spk_to_utts = feature_extraction.get_librispeech_spk_to_utts(
+        spk_to_utts = dataset.get_librispeech_spk_to_utts(
             myconfig.TRAIN_DATA_DIR)
         print("Training data:", myconfig.TRAIN_DATA_DIR)
     with multiprocessing.Pool(myconfig.NUM_PROCESSES) as pool:

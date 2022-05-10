@@ -35,6 +35,7 @@ If you are still clueless after trying hard, then don't worry, this library serv
 ### Understand the file structure
 
 * `myconfig.py`: all the configurations of this library
+* `dataset.py`: code for parsing datasets
 * `feature_extraction.py`: code for extracting acoustic features with librosa
 * `neural_net.py`: code for building neural networks and training with PyTorch
 * `evaluation.py`: code for inference and evaluation

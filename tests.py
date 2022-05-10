@@ -5,29 +5,17 @@ import numpy as np
 import multiprocessing
 import tempfile
 
+import dataset
 import feature_extraction
 import neural_net
 import evaluation
 import myconfig
 
 
-class TestFeatureExtraction(unittest.TestCase):
+class TestDataset(unittest.TestCase):
     def setUp(self):
-        self.spk_to_utts = feature_extraction.get_librispeech_spk_to_utts(
+        self.spk_to_utts = dataset.get_librispeech_spk_to_utts(
             myconfig.TEST_DATA_DIR)
-
-    def test_extract_features(self):
-        features = feature_extraction.extract_features(os.path.join(
-            myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
-        self.assertEqual(features.shape, (154, myconfig.N_MFCC))
-
-    def test_extract_sliding_windows(self):
-        features = feature_extraction.extract_features(os.path.join(
-            myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
-        sliding_windows = feature_extraction.extract_sliding_windows(features)
-        self.assertEqual(len(sliding_windows), 2)
-        self.assertEqual(sliding_windows[0].shape,
-                         (myconfig.SEQ_LEN, myconfig.N_MFCC))
 
     def test_get_librispeech_spk_to_utts(self):
         self.assertEqual(len(self.spk_to_utts.keys()), 40)
@@ -42,26 +30,45 @@ spk2 ,/path/to/utt3
         _, csv_file = tempfile.mkstemp()
         with open(csv_file, "wt") as f:
             f.write(csv_content)
-        spk_to_utts = feature_extraction.get_csv_spk_to_utts(csv_file)
+        spk_to_utts = dataset.get_csv_spk_to_utts(csv_file)
         self.assertEqual(len(spk_to_utts.keys()), 2)
         self.assertEqual(len(spk_to_utts["spk1"]), 2)
         self.assertEqual(len(spk_to_utts["spk2"]), 1)
 
     def test_get_triplet(self):
-        anchor1, pos1, neg1 = feature_extraction.get_triplet(self.spk_to_utts)
+        anchor1, pos1, neg1 = dataset.get_triplet(self.spk_to_utts)
         anchor1_spk = os.path.basename(anchor1).split("-")[0]
         pos1_spk = os.path.basename(pos1).split("-")[0]
         neg1_spk = os.path.basename(neg1).split("-")[0]
         self.assertEqual(anchor1_spk, pos1_spk)
         self.assertNotEqual(anchor1_spk, neg1_spk)
 
-        anchor2, pos2, neg2 = feature_extraction.get_triplet(self.spk_to_utts)
+        anchor2, pos2, neg2 = dataset.get_triplet(self.spk_to_utts)
         anchor2_spk = os.path.basename(anchor2).split("-")[0]
         pos2_spk = os.path.basename(pos2).split("-")[0]
         neg2_spk = os.path.basename(neg2).split("-")[0]
         self.assertNotEqual(anchor1_spk, anchor2_spk)
         self.assertNotEqual(pos1_spk, pos2_spk)
         self.assertNotEqual(neg1_spk, neg2_spk)
+
+
+class TestFeatureExtraction(unittest.TestCase):
+    def setUp(self):
+        self.spk_to_utts = dataset.get_librispeech_spk_to_utts(
+            myconfig.TEST_DATA_DIR)
+
+    def test_extract_features(self):
+        features = feature_extraction.extract_features(os.path.join(
+            myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
+        self.assertEqual(features.shape, (154, myconfig.N_MFCC))
+
+    def test_extract_sliding_windows(self):
+        features = feature_extraction.extract_features(os.path.join(
+            myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
+        sliding_windows = feature_extraction.extract_sliding_windows(features)
+        self.assertEqual(len(sliding_windows), 2)
+        self.assertEqual(sliding_windows[0].shape,
+                         (myconfig.SEQ_LEN, myconfig.N_MFCC))
 
     def test_get_triplet_features(self):
         anchor, pos, neg = feature_extraction.get_triplet_features(
@@ -90,7 +97,7 @@ spk2 ,/path/to/utt3
 
 class TestNeuralNet(unittest.TestCase):
     def setUp(self):
-        self.spk_to_utts = feature_extraction.get_librispeech_spk_to_utts(
+        self.spk_to_utts = dataset.get_librispeech_spk_to_utts(
             myconfig.TRAIN_DATA_DIR)
 
     def test_get_triplet_loss1(self):
@@ -153,7 +160,7 @@ class TestEvaluation(unittest.TestCase):
         myconfig.BI_LSTM = False
         myconfig.FRAME_AGGREGATION_MEAN = False
         self.encoder = neural_net.SpeakerEncoder().to(myconfig.DEVICE)
-        self.spk_to_utts = feature_extraction.get_librispeech_spk_to_utts(
+        self.spk_to_utts = dataset.get_librispeech_spk_to_utts(
             myconfig.TEST_DATA_DIR)
 
     def test_run_unilstm_inference(self):
