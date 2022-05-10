@@ -66,6 +66,16 @@ def save_model(saved_model_path, encoder, losses, start_time):
                saved_model_path)
 
 
+def batch_inference(batch_input, encoder):
+    """Run batch inference."""
+    if myconfig.FRAME_AGGREGATION_MEAN:
+        batch_output = torch.mean(
+            encoder(batch_input), dim=1, keepdim=False)
+    else:
+        batch_output = encoder(batch_input)[:, -1, :]
+    return batch_output
+
+
 def train_network(num_steps, saved_model=None):
     start_time = time.time()
     losses = []
@@ -84,8 +94,7 @@ def train_network(num_steps, saved_model=None):
             spk_to_utts, myconfig.BATCH_SIZE).to(myconfig.DEVICE)
 
         # Compute loss.
-        batch_output = encoder(batch_input)[:, -1, :]
-        print(batch_output.shape)
+        batch_output = batch_inference(batch_input, encoder)
         loss = get_triplet_loss_from_batch_output(
             batch_output, myconfig.BATCH_SIZE)
         loss.backward()

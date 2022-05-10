@@ -112,11 +112,13 @@ class TestNeuralNet(unittest.TestCase):
 
     def test_train_unilstm_network(self):
         myconfig.BI_LSTM = False
+        myconfig.FRAME_AGGREGATION_MEAN = False
         losses = neural_net.train_network(num_steps=2)
         self.assertEqual(len(losses), 2)
 
     def test_train_bilstm_network(self):
         myconfig.BI_LSTM = True
+        myconfig.FRAME_AGGREGATION_MEAN = True
         losses = neural_net.train_network(num_steps=2)
         self.assertEqual(len(losses), 2)
 
@@ -124,6 +126,7 @@ class TestNeuralNet(unittest.TestCase):
 class TestEvaluation(unittest.TestCase):
     def setUp(self):
         myconfig.BI_LSTM = False
+        myconfig.FRAME_AGGREGATION_MEAN = False
         self.encoder = neural_net.SpeakerEncoder().to(myconfig.DEVICE)
 
     def test_run_unilstm_inference(self):
@@ -134,6 +137,7 @@ class TestEvaluation(unittest.TestCase):
 
     def test_run_bilstm_inference(self):
         myconfig.BI_LSTM = True
+        myconfig.FRAME_AGGREGATION_MEAN = True
         self.encoder = neural_net.SpeakerEncoder().to(myconfig.DEVICE)
         features = feature_extraction.extract_features(os.path.join(
             myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))

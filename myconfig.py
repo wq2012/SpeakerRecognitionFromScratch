@@ -27,6 +27,10 @@ LSTM_NUM_LAYERS = 3
 # Whether to use bi-directional LSTM.
 BI_LSTM = False
 
+# If false, use last frame of LSTM inference as aggregated output;
+# if true, use mean frame of LSTM inference as aggregated output.
+FRAME_AGGREGATION_MEAN = False
+
 # Sequence length of the sliding window for LSTM.
 SEQ_LEN = 100  # 3.2 seconds
 
