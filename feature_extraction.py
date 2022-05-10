@@ -65,26 +65,32 @@ def trim_features(features):
     return features[start: start + myconfig.SEQ_LEN, :]
 
 
-def get_triplet_features_trimmed(spk_to_utts):
-    """Get a triplet of trimmed anchor/pos/neg features."""
-    anchor, pos, neg = get_triplet_features(spk_to_utts)
-    while (anchor.shape[0] < myconfig.SEQ_LEN or
-           pos.shape[0] < myconfig.SEQ_LEN or
-           neg.shape[0] < myconfig.SEQ_LEN):
-        anchor, pos, neg = get_triplet_features(spk_to_utts)
-    return (trim_features(anchor),
-            trim_features(pos),
-            trim_features(neg))
+class TrimmedTripletFeaturesFetcher:
+    """The fetcher of trimmed features for multi-processing."""
+
+    def __init__(self, spk_to_utts):
+        self.spk_to_utts = spk_to_utts
+
+    def __call__(self, _):
+        """Get a triplet of trimmed anchor/pos/neg features."""
+        anchor, pos, neg = get_triplet_features(self.spk_to_utts)
+        while (anchor.shape[0] < myconfig.SEQ_LEN or
+               pos.shape[0] < myconfig.SEQ_LEN or
+               neg.shape[0] < myconfig.SEQ_LEN):
+            anchor, pos, neg = get_triplet_features(self.spk_to_utts)
+        return np.stack([trim_features(anchor),
+                         trim_features(pos),
+                         trim_features(neg)])
 
 
-def get_batched_triplet_input(spk_to_utts, batch_size):
+def get_batched_triplet_input(spk_to_utts, batch_size, pool=None):
     """Get batched triplet input for PyTorch."""
-    input_arrays = []
-    for _ in range(batch_size):
-        anchor, pos, neg = get_triplet_features_trimmed(
-            spk_to_utts)
-        input_arrays += [anchor, pos, neg]
-    batch_input = torch.from_numpy(np.stack(input_arrays)).float()
+    fetcher = TrimmedTripletFeaturesFetcher(spk_to_utts)
+    if pool is None:
+        input_arrays = list(map(fetcher, range(batch_size)))
+    else:
+        input_arrays = pool.map(fetcher, range(batch_size))
+    batch_input = torch.from_numpy(np.concatenate(input_arrays)).float()
     return batch_input
 
 

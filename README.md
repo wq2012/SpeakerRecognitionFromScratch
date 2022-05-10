@@ -131,9 +131,9 @@ There are many reasons, for example:
 
 * Data: We are only using a small subset of LibriSpeech clean, this is very simple data, and with very few speakers. Also, no data augmentation is used.
 * Feature: We are simply using default params of MFCC in librosa.
-* Model: We are simply using 3 layers of uni-directional LSTM.
+* Model: We are simply using 3 layers of LSTM.
 * Loss: We are using a simple triplet loss.
-* Efficiency: Code is written for simplicity and readability, not really for efficiency. Multi-processing and multi-threading are not used.
+* Efficiency: Code is written for simplicity and readability, not really for efficiency.
 
 Good news is that at least we have a system working end-to-end. It hooks up with data, extracts features, defines a neural network, trains the network, and evaluates it, all successfully.
 

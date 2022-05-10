@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 import numpy as np
+import multiprocessing
 
 import feature_extraction
 import myconfig
@@ -76,7 +77,7 @@ def batch_inference(batch_input, encoder):
     return batch_output
 
 
-def train_network(num_steps, saved_model=None):
+def train_network(num_steps, saved_model=None, pool=None):
     start_time = time.time()
     losses = []
     spk_to_utts = feature_extraction.get_spk_to_utts(myconfig.TRAIN_DATA_DIR)
@@ -91,7 +92,7 @@ def train_network(num_steps, saved_model=None):
 
         # Build batched input.
         batch_input = feature_extraction.get_batched_triplet_input(
-            spk_to_utts, myconfig.BATCH_SIZE).to(myconfig.DEVICE)
+            spk_to_utts, myconfig.BATCH_SIZE, pool).to(myconfig.DEVICE)
 
         # Compute loss.
         batch_output = batch_inference(batch_input, encoder)
@@ -115,7 +116,10 @@ def train_network(num_steps, saved_model=None):
 
 
 def run_training():
-    losses = train_network(myconfig.TRAINING_STEPS, myconfig.SAVED_MODEL_PATH)
+    with multiprocessing.Pool(myconfig.NUM_PROCESSES) as pool:
+        losses = train_network(myconfig.TRAINING_STEPS,
+                               myconfig.SAVED_MODEL_PATH,
+                               pool)
     plt.plot(losses)
     plt.xlabel("step")
     plt.ylabel("loss")

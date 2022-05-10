@@ -1,6 +1,7 @@
 # This file has the configurations of the experiments.
 import os
 import torch
+import multiprocessing
 
 # Path of downloaded LibriSpeech datasets.
 TRAIN_DATA_DIR = os.path.join(
@@ -50,7 +51,7 @@ LEARNING_RATE = 0.0001
 SAVE_MODEL_FREQUENCY = 10000
 
 # Number of steps to train.
-TRAINING_STEPS = 50000
+TRAINING_STEPS = 100000
 
 # Number of triplets to evaluate for computing Equal Error Rate (EER).
 # Both the number of positive trials and number of negative trials will be
@@ -59,6 +60,9 @@ NUM_EVAL_TRIPLETS = 1000
 
 # Step of threshold sweeping for computing Equal Error Rate (EER).
 EVAL_THRESHOLD_STEP = 0.001
+
+# Number of processes for multi-processing.
+NUM_PROCESSES = min(multiprocessing.cpu_count(), BATCH_SIZE)
 
 # Wehther to use GPU or CPU.
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

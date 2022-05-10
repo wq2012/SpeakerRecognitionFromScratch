@@ -2,6 +2,7 @@ import os
 import torch
 import unittest
 import numpy as np
+import multiprocessing
 
 import feature_extraction
 import neural_net
@@ -55,8 +56,12 @@ class TestFeatureExtraction(unittest.TestCase):
         self.assertEqual(myconfig.N_MFCC, neg.shape[1])
 
     def test_get_triplet_features_trimmed(self):
-        anchor, pos, neg = feature_extraction.get_triplet_features_trimmed(
+        fetcher = feature_extraction.TrimmedTripletFeaturesFetcher(
             self.spk_to_utts)
+        fetched = fetcher(None)
+        anchor = fetched[0, :, :]
+        pos = fetched[1, :, :]
+        neg = fetched[2, :, :]
         self.assertEqual(anchor.shape, (myconfig.SEQ_LEN, myconfig.N_MFCC))
         self.assertEqual(pos.shape, (myconfig.SEQ_LEN, myconfig.N_MFCC))
         self.assertEqual(neg.shape, (myconfig.SEQ_LEN, myconfig.N_MFCC))
@@ -119,7 +124,8 @@ class TestNeuralNet(unittest.TestCase):
     def test_train_bilstm_network(self):
         myconfig.BI_LSTM = True
         myconfig.FRAME_AGGREGATION_MEAN = True
-        losses = neural_net.train_network(num_steps=2)
+        with multiprocessing.Pool(myconfig.NUM_PROCESSES) as pool:
+            losses = neural_net.train_network(num_steps=2, pool=pool)
         self.assertEqual(len(losses), 2)
 
 
