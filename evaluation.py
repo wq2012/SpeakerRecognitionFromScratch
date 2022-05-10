@@ -82,7 +82,8 @@ def compute_scores(encoder, num_eval_triplets=myconfig.NUM_EVAL_TRIPLETS):
 
 def compute_eer(labels, scores):
     """Compute the Equal Error Rate (EER)."""
-    assert len(labels) == len(scores)
+    if len(labels) != len(scores):
+        raise ValueError("Length of labels and scored must match")
     eer_threshold = None
     eer = None
     min_delta = 1
