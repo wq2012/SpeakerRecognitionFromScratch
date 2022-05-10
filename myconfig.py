@@ -26,6 +26,9 @@ SAVED_MODEL_PATH = os.path.join(
 # Number of MFCCs for librosa.feature.mfcc.
 N_MFCC = 40
 
+# Whether we are going to train with SpecAugment.
+SPEC_AUG_TRAINING = False
+
 # Hidden size of LSTM layers.
 LSTM_HIDDEN_SIZE = 64
 

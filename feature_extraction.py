@@ -6,6 +6,7 @@ import numpy as np
 
 import myconfig
 import dataset
+import specaug
 
 
 def extract_features(audio_file):
@@ -43,11 +44,14 @@ def get_triplet_features(spk_to_utts):
             extract_features(neg_utt))
 
 
-def trim_features(features):
+def trim_features(features, apply_specaug):
     """Trim features to SEQ_LEN."""
     full_length = features.shape[0]
     start = random.randint(0, full_length - myconfig.SEQ_LEN)
-    return features[start: start + myconfig.SEQ_LEN, :]
+    trimmed_features = features[start: start + myconfig.SEQ_LEN, :]
+    if apply_specaug:
+        trimmed_features = specaug.apply_specaug(trimmed_features)
+    return trimmed_features
 
 
 class TrimmedTripletFeaturesFetcher:
@@ -63,9 +67,9 @@ class TrimmedTripletFeaturesFetcher:
                pos.shape[0] < myconfig.SEQ_LEN or
                neg.shape[0] < myconfig.SEQ_LEN):
             anchor, pos, neg = get_triplet_features(self.spk_to_utts)
-        return np.stack([trim_features(anchor),
-                         trim_features(pos),
-                         trim_features(neg)])
+        return np.stack([trim_features(anchor, myconfig.SPEC_AUG_TRAINING),
+                         trim_features(pos, myconfig.SPEC_AUG_TRAINING),
+                         trim_features(neg, myconfig.SPEC_AUG_TRAINING)])
 
 
 def get_batched_triplet_input(spk_to_utts, batch_size, pool=None):

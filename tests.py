@@ -6,6 +6,7 @@ import multiprocessing
 import tempfile
 
 import dataset
+import specaug
 import feature_extraction
 import neural_net
 import evaluation
@@ -50,6 +51,13 @@ spk2 ,/path/to/utt3
         self.assertNotEqual(anchor1_spk, anchor2_spk)
         self.assertNotEqual(pos1_spk, pos2_spk)
         self.assertNotEqual(neg1_spk, neg2_spk)
+
+
+class TestSpecAug(unittest.TestCase):
+    def test_specaug(self):
+        features = np.random.rand(myconfig.SEQ_LEN, myconfig.N_MFCC)
+        outputs = specaug.apply_specaug(features)
+        self.assertEqual(outputs.shape, (myconfig.SEQ_LEN, myconfig.N_MFCC))
 
 
 class TestFeatureExtraction(unittest.TestCase):

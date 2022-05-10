@@ -38,7 +38,7 @@ def get_csv_spk_to_utts(csv_file):
 
 def get_triplet(spk_to_utts):
     """Get a triplet of anchor/pos/neg samples."""
-    pos_spk, neg_spk = random.sample(spk_to_utts.keys(), 2)
+    pos_spk, neg_spk = random.sample(list(spk_to_utts.keys()), 2)
     anchor_utt, pos_utt = random.sample(spk_to_utts[pos_spk], 2)
     neg_utt = random.sample(spk_to_utts[neg_spk], 1)[0]
     return (anchor_utt, pos_utt, neg_utt)
