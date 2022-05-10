@@ -3,13 +3,20 @@ import os
 import torch
 import multiprocessing
 
-# Path of downloaded LibriSpeech datasets.
+# Paths of downloaded LibriSpeech datasets.
 TRAIN_DATA_DIR = os.path.join(
     os.path.expanduser("~"),
     "Code/github/SpeakerRecognitionFromScratch/data/LibriSpeech/train-clean-100")
 TEST_DATA_DIR = os.path.join(
     os.path.expanduser("~"),
     "Code/github/SpeakerRecognitionFromScratch/data/LibriSpeech/test-clean")
+
+# Paths of CSV files where the first column is speaker, and the second column is
+# utterance file.
+# These will allow you to train/evaluate using other datasets than LibriSpeech.
+# If given, TRAIN_DATA_DIR and/or TEST_DATA_DIR will be ignored.
+TRAIN_DATA_CSV = ""
+TEST_DATA_CSV = ""
 
 # Path of save model.
 SAVED_MODEL_PATH = os.path.join(

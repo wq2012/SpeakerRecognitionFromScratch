@@ -3,6 +3,7 @@ import torch
 import unittest
 import numpy as np
 import multiprocessing
+import tempfile
 
 import feature_extraction
 import neural_net
@@ -29,8 +30,22 @@ class TestFeatureExtraction(unittest.TestCase):
                          (myconfig.SEQ_LEN, myconfig.N_MFCC))
 
     def test_get_librispeech_spk_to_utts(self):
-        self.assertEqual(len(self.spk_to_utts.keys()), myconfig.N_MFCC)
+        self.assertEqual(len(self.spk_to_utts.keys()), 40)
         self.assertEqual(len(self.spk_to_utts["121"]), 62)
+
+    def test_get_csv_spk_to_utts(self):
+        csv_content = """
+spk1,/path/to/utt1
+spk1, /path/to/utt2
+spk2 ,/path/to/utt3
+        """
+        _, csv_file = tempfile.mkstemp()
+        with open(csv_file, "wt") as f:
+            f.write(csv_content)
+        spk_to_utts = feature_extraction.get_csv_spk_to_utts(csv_file)
+        self.assertEqual(len(spk_to_utts.keys()), 2)
+        self.assertEqual(len(spk_to_utts["spk1"]), 2)
+        self.assertEqual(len(spk_to_utts["spk2"]), 1)
 
     def test_get_triplet(self):
         anchor1, pos1, neg1 = feature_extraction.get_triplet(self.spk_to_utts)

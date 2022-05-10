@@ -5,6 +5,7 @@ import glob
 import random
 import torch
 import numpy as np
+import csv
 
 import myconfig
 
@@ -48,6 +49,23 @@ def get_librispeech_spk_to_utts(data_dir):
             spk_to_utts[spk] = [flac_file]
         else:
             spk_to_utts[spk].append(flac_file)
+    return spk_to_utts
+
+
+def get_csv_spk_to_utts(csv_file):
+    """Get the dict from speaker to list of utterances from CSV file."""
+    spk_to_utts = dict()
+    with open(csv_file) as f:
+        reader = csv.reader(f)
+        for row in reader:
+            if len(row) != 2:
+                continue
+            spk = row[0].strip()
+            utt = row[1].strip()
+            if spk not in spk_to_utts:
+                spk_to_utts[spk] = [utt]
+            else:
+                spk_to_utts[spk].append(utt)
     return spk_to_utts
 
 
@@ -101,19 +119,3 @@ def get_batched_triplet_input(spk_to_utts, batch_size, pool=None):
         input_arrays = pool.map(fetcher, range(batch_size))
     batch_input = torch.from_numpy(np.concatenate(input_arrays)).float()
     return batch_input
-
-
-def main():
-    features = extract_features(os.path.join(
-        myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
-    print("Shape of features:", features.shape)
-
-    spk_to_utts = get_librispeech_spk_to_utts(myconfig.TEST_DATA_DIR)
-    triplet = get_triplet(spk_to_utts)
-    triplet_features = get_triplet_features(spk_to_utts)
-    print(triplet)
-    print(triplet_features)
-
-
-if __name__ == "__main__":
-    main()
