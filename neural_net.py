@@ -1,5 +1,6 @@
 import os
 import time
+from unicodedata import bidirectional
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -19,14 +20,16 @@ class SpeakerEncoder(nn.Module):
             input_size=myconfig.N_MFCC,
             hidden_size=myconfig.LSTM_HIDDEN_SIZE,
             num_layers=myconfig.LSTM_NUM_LAYERS,
-            batch_first=True)
+            batch_first=True,
+            bidirectional=myconfig.BI_LSTM)
 
     def forward(self, x):
+        D = 2 if myconfig.BI_LSTM else 1
         h0 = torch.zeros(
-            myconfig.LSTM_NUM_LAYERS, x.shape[0],  myconfig.LSTM_HIDDEN_SIZE
+            D * myconfig.LSTM_NUM_LAYERS, x.shape[0],  myconfig.LSTM_HIDDEN_SIZE
         ).to(myconfig.DEVICE)
         c0 = torch.zeros(
-            myconfig.LSTM_NUM_LAYERS, x.shape[0], myconfig.LSTM_HIDDEN_SIZE
+            D * myconfig.LSTM_NUM_LAYERS, x.shape[0], myconfig.LSTM_HIDDEN_SIZE
         ).to(myconfig.DEVICE)
         y, (hn, cn) = self.lstm(x, (h0, c0))
         return y
@@ -82,6 +85,7 @@ def train_network(num_steps, saved_model=None):
 
         # Compute loss.
         batch_output = encoder(batch_input)[:, -1, :]
+        print(batch_output.shape)
         loss = get_triplet_loss_from_batch_output(
             batch_output, myconfig.BATCH_SIZE)
         loss.backward()

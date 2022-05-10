@@ -70,9 +70,6 @@ class TestFeatureExtraction(unittest.TestCase):
 
 class TestNeuralNet(unittest.TestCase):
 
-    def setUp(self):
-        self.encoder = neural_net.SpeakerEncoder().to(myconfig.DEVICE)
-
     def test_get_triplet_loss1(self):
         anchor = torch.tensor([0.0, 1.0])
         pos = torch.tensor([0.0, 1.0])
@@ -113,20 +110,35 @@ class TestNeuralNet(unittest.TestCase):
         loss_value = loss.data.numpy().item()
         self.assertAlmostEqual(loss_value, 1 + myconfig.TRIPLET_ALPHA)
 
-    def test_train_network(self):
+    def test_train_unilstm_network(self):
+        myconfig.BI_LSTM = False
+        losses = neural_net.train_network(num_steps=2)
+        self.assertEqual(len(losses), 2)
+
+    def test_train_bilstm_network(self):
+        myconfig.BI_LSTM = True
         losses = neural_net.train_network(num_steps=2)
         self.assertEqual(len(losses), 2)
 
 
 class TestEvaluation(unittest.TestCase):
     def setUp(self):
+        myconfig.BI_LSTM = False
         self.encoder = neural_net.SpeakerEncoder().to(myconfig.DEVICE)
 
-    def test_run_inference(self):
+    def test_run_unilstm_inference(self):
         features = feature_extraction.extract_features(os.path.join(
             myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
         embedding = evaluation.run_inference(features, self.encoder)
         self.assertEqual(embedding.shape, (myconfig.LSTM_HIDDEN_SIZE,))
+
+    def test_run_bilstm_inference(self):
+        myconfig.BI_LSTM = True
+        self.encoder = neural_net.SpeakerEncoder().to(myconfig.DEVICE)
+        features = feature_extraction.extract_features(os.path.join(
+            myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
+        embedding = evaluation.run_inference(features, self.encoder)
+        self.assertEqual(embedding.shape, (2 * myconfig.LSTM_HIDDEN_SIZE,))
 
     def test_cosine_similarity(self):
         a = np.array([0.6, 0.8, 0.0])

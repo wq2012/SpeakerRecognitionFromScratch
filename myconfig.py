@@ -24,6 +24,9 @@ LSTM_HIDDEN_SIZE = 64
 # Number of LSTM layers.
 LSTM_NUM_LAYERS = 3
 
+# Whether to use bi-directional LSTM.
+BI_LSTM = False
+
 # Sequence length of the sliding window for LSTM.
 SEQ_LEN = 100  # 3.2 seconds
 
