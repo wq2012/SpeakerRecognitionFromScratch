@@ -118,14 +118,14 @@ You can update `NUM_EVAL_TRIPLETS` in `myconfig.py` to control how many positive
 When the evaluation job finishes, the EER will be printed to screen, for example:
 
 ```
-eer_threshold = 0.7320000000000005 eer = 0.101
+eer_threshold = 0.5200000000000004 eer = 0.08024999999999999
 ```
 
-This means the Equal Error Rate is 10.1%.
+This means the Equal Error Rate is 8.02%.
 
 ## What's next?
 
-Like we said earlier, this is NOT a very good system. 10.1% is a very high EER.
+Like we said earlier, this is NOT a very good system. 8% is a very high EER.
 
 There are many reasons, for example:
 
@@ -140,6 +140,17 @@ Good news is that at least we have a system working end-to-end. It hooks up with
 In this project, you will need to come up with ideas to improve the system, to make the EER much smaller.
 
 Are you ready for this challenge?
+
+## Pretrained models
+
+I have pretrained a few models for you to play with. These models are localed under `saved_model/pretrained`.
+
+**saved_model.bilstm.mean.clean100.gpu100000.pt**
+
+* This is an bi-directional LSTM model with mean frame aggregation.
+* The training data is LibriSpeech `train-clean-100`, which has 251 speakers.
+* It has been trained on GPU for 100K steps.
+* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 8.02%, and the EER threshold is 0.52.
 
 ## Ask a question
 

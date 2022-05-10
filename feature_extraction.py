@@ -12,6 +12,8 @@ import myconfig
 def extract_features(flac_file):
     """Extract MFCC features from a flac file, shape=(TIME, MFCC)."""
     waveform, sample_rate = sf.read(flac_file)
+    if sample_rate != 16000:
+        raise ValueError("Audio sample rate must be 16000")
     features = librosa.feature.mfcc(
         y=waveform, sr=sample_rate, n_mfcc=myconfig.N_MFCC)
     return features.transpose()

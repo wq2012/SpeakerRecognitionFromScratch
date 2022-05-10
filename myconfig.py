@@ -26,11 +26,11 @@ LSTM_HIDDEN_SIZE = 64
 LSTM_NUM_LAYERS = 3
 
 # Whether to use bi-directional LSTM.
-BI_LSTM = False
+BI_LSTM = True
 
 # If false, use last frame of LSTM inference as aggregated output;
 # if true, use mean frame of LSTM inference as aggregated output.
-FRAME_AGGREGATION_MEAN = False
+FRAME_AGGREGATION_MEAN = True
 
 # Sequence length of the sliding window for LSTM.
 SEQ_LEN = 100  # 3.2 seconds
@@ -56,7 +56,7 @@ TRAINING_STEPS = 100000
 # Number of triplets to evaluate for computing Equal Error Rate (EER).
 # Both the number of positive trials and number of negative trials will be
 # equal to this number.
-NUM_EVAL_TRIPLETS = 1000
+NUM_EVAL_TRIPLETS = 10000
 
 # Step of threshold sweeping for computing Equal Error Rate (EER).
 EVAL_THRESHOLD_STEP = 0.001

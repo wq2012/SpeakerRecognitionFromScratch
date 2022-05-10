@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-import multiprocessing.dummy as multiprocessing
+import multiprocessing
 
 import feature_extraction
 import neural_net
@@ -68,10 +68,11 @@ def compute_scores(encoder, num_eval_triplets=myconfig.NUM_EVAL_TRIPLETS):
     scores = []
     spk_to_utts = feature_extraction.get_spk_to_utts(myconfig.TEST_DATA_DIR)
     fetcher = TripletScoreFetcher(spk_to_utts, encoder, num_eval_triplets)
-    with multiprocessing.Pool(myconfig.NUM_PROCESSES) as pool:
+    # CUDA does not support multi-processing, so using a ThreadPool.
+    with multiprocessing.pool.ThreadPool(myconfig.NUM_PROCESSES) as pool:
         while num_eval_triplets > len(labels) // 2:
             label_score_pairs = pool.map(fetcher, range(
-                num_eval_triplets - len(labels) // 2))
+                len(labels) // 2, num_eval_triplets))
             for triplet_labels, triplet_scores in label_score_pairs:
                 labels += triplet_labels
                 scores += triplet_scores
