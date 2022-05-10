@@ -12,7 +12,7 @@ import myconfig
 
 class TestFeatureExtraction(unittest.TestCase):
     def setUp(self):
-        self.spk_to_utts = feature_extraction.get_spk_to_utts(
+        self.spk_to_utts = feature_extraction.get_librispeech_spk_to_utts(
             myconfig.TEST_DATA_DIR)
 
     def test_extract_features(self):
@@ -28,7 +28,7 @@ class TestFeatureExtraction(unittest.TestCase):
         self.assertEqual(sliding_windows[0].shape,
                          (myconfig.SEQ_LEN, myconfig.N_MFCC))
 
-    def test_get_spk_to_utts(self):
+    def test_get_librispeech_spk_to_utts(self):
         self.assertEqual(len(self.spk_to_utts.keys()), myconfig.N_MFCC)
         self.assertEqual(len(self.spk_to_utts["121"]), 62)
 
@@ -74,6 +74,9 @@ class TestFeatureExtraction(unittest.TestCase):
 
 
 class TestNeuralNet(unittest.TestCase):
+    def setUp(self):
+        self.spk_to_utts = feature_extraction.get_librispeech_spk_to_utts(
+            myconfig.TRAIN_DATA_DIR)
 
     def test_get_triplet_loss1(self):
         anchor = torch.tensor([0.0, 1.0])
@@ -118,14 +121,15 @@ class TestNeuralNet(unittest.TestCase):
     def test_train_unilstm_network(self):
         myconfig.BI_LSTM = False
         myconfig.FRAME_AGGREGATION_MEAN = False
-        losses = neural_net.train_network(num_steps=2)
+        losses = neural_net.train_network(self.spk_to_utts, num_steps=2)
         self.assertEqual(len(losses), 2)
 
     def test_train_bilstm_network(self):
         myconfig.BI_LSTM = True
         myconfig.FRAME_AGGREGATION_MEAN = True
         with multiprocessing.Pool(myconfig.NUM_PROCESSES) as pool:
-            losses = neural_net.train_network(num_steps=2, pool=pool)
+            losses = neural_net.train_network(
+                self.spk_to_utts, num_steps=2, pool=pool)
         self.assertEqual(len(losses), 2)
 
 
@@ -134,6 +138,8 @@ class TestEvaluation(unittest.TestCase):
         myconfig.BI_LSTM = False
         myconfig.FRAME_AGGREGATION_MEAN = False
         self.encoder = neural_net.SpeakerEncoder().to(myconfig.DEVICE)
+        self.spk_to_utts = feature_extraction.get_librispeech_spk_to_utts(
+            myconfig.TEST_DATA_DIR)
 
     def test_run_unilstm_inference(self):
         features = feature_extraction.extract_features(os.path.join(
@@ -168,7 +174,8 @@ class TestEvaluation(unittest.TestCase):
         self.assertAlmostEqual(0.64, evaluation.cosine_similarity(a, b))
 
     def test_compute_scores(self):
-        labels, scores = evaluation.compute_scores(self.encoder, 3)
+        labels, scores = evaluation.compute_scores(
+            self.encoder, self.spk_to_utts, 3)
         self.assertListEqual(labels, [1, 0, 1, 0, 1, 0])
         self.assertEqual(len(scores), 6)
 

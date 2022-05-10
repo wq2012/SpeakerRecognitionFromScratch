@@ -36,8 +36,8 @@ def extract_sliding_windows(features):
     return sliding_windows
 
 
-def get_spk_to_utts(data_dir):
-    """Get the dict from speaker to list of utterances."""
+def get_librispeech_spk_to_utts(data_dir):
+    """Get the dict from speaker to list of utterances for LibriSpeech."""
     flac_files = glob.glob(os.path.join(data_dir, "*", "*", "*.flac"))
     spk_to_utts = dict()
     for flac_file in flac_files:
@@ -108,7 +108,7 @@ def main():
         myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
     print("Shape of features:", features.shape)
 
-    spk_to_utts = get_spk_to_utts(myconfig.TEST_DATA_DIR)
+    spk_to_utts = get_librispeech_spk_to_utts(myconfig.TEST_DATA_DIR)
     triplet = get_triplet(spk_to_utts)
     triplet_features = get_triplet_features(spk_to_utts)
     print(triplet)

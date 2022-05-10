@@ -62,11 +62,10 @@ class TripletScoreFetcher:
         return (triplet_labels, triplet_scores)
 
 
-def compute_scores(encoder, num_eval_triplets=myconfig.NUM_EVAL_TRIPLETS):
+def compute_scores(encoder, spk_to_utts, num_eval_triplets=myconfig.NUM_EVAL_TRIPLETS):
     """Compute cosine similarity scores from testing data."""
     labels = []
     scores = []
-    spk_to_utts = feature_extraction.get_spk_to_utts(myconfig.TEST_DATA_DIR)
     fetcher = TripletScoreFetcher(spk_to_utts, encoder, num_eval_triplets)
     # CUDA does not support multi-processing, so using a ThreadPool.
     with multiprocessing.pool.ThreadPool(myconfig.NUM_PROCESSES) as pool:
@@ -107,7 +106,10 @@ def compute_eer(labels, scores):
 def run_eval():
     """Run evaluation of the saved model on test data."""
     encoder = load_saved_model(myconfig.SAVED_MODEL_PATH)
-    labels, scores = compute_scores(encoder, myconfig.NUM_EVAL_TRIPLETS)
+    spk_to_utts = feature_extraction.get_librispeech_spk_to_utts(
+        myconfig.TEST_DATA_DIR)
+    labels, scores = compute_scores(
+        encoder, spk_to_utts, myconfig.NUM_EVAL_TRIPLETS)
     eer, eer_threshold = compute_eer(labels, scores)
     print("eer_threshold =", eer_threshold, "eer =", eer)
 

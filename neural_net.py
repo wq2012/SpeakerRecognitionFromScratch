@@ -77,11 +77,9 @@ def batch_inference(batch_input, encoder):
     return batch_output
 
 
-def train_network(num_steps, saved_model=None, pool=None):
+def train_network(spk_to_utts, num_steps, saved_model=None, pool=None):
     start_time = time.time()
     losses = []
-    spk_to_utts = feature_extraction.get_spk_to_utts(myconfig.TRAIN_DATA_DIR)
-
     encoder = SpeakerEncoder().to(myconfig.DEVICE)
 
     # Train
@@ -116,8 +114,11 @@ def train_network(num_steps, saved_model=None, pool=None):
 
 
 def run_training():
+    spk_to_utts = feature_extraction.get_librispeech_spk_to_utts(
+        myconfig.TRAIN_DATA_DIR)
     with multiprocessing.Pool(myconfig.NUM_PROCESSES) as pool:
-        losses = train_network(myconfig.TRAINING_STEPS,
+        losses = train_network(spk_to_utts,
+                               myconfig.TRAINING_STEPS,
                                myconfig.SAVED_MODEL_PATH,
                                pool)
     plt.plot(losses)
