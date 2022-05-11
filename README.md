@@ -159,7 +159,7 @@ I have pretrained a few models for you to play with. These models are localed un
 **saved_model.bilstm.mean.clean100.specaug.gpu100000.pt**
 
 * Everything is the same with above except that we applied SpecAugment during training.
-* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 7.99%, and the EER threshold is 0.556.
+* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 7.89%, and the EER threshold is 0.619.
 
 ### Models trained on all LibriSpeech training data
 

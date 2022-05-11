@@ -67,9 +67,9 @@ class TrimmedTripletFeaturesFetcher:
                pos.shape[0] < myconfig.SEQ_LEN or
                neg.shape[0] < myconfig.SEQ_LEN):
             anchor, pos, neg = get_triplet_features(self.spk_to_utts)
-        return np.stack([trim_features(anchor, myconfig.SPEC_AUG_TRAINING),
-                         trim_features(pos, myconfig.SPEC_AUG_TRAINING),
-                         trim_features(neg, myconfig.SPEC_AUG_TRAINING)])
+        return np.stack([trim_features(anchor, myconfig.SPECAUG_TRAINING),
+                         trim_features(pos, myconfig.SPECAUG_TRAINING),
+                         trim_features(neg, myconfig.SPECAUG_TRAINING)])
 
 
 def get_batched_triplet_input(spk_to_utts, batch_size, pool=None):

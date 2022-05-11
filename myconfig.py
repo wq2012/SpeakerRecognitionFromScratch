@@ -26,9 +26,6 @@ SAVED_MODEL_PATH = os.path.join(
 # Number of MFCCs for librosa.feature.mfcc.
 N_MFCC = 40
 
-# Whether we are going to train with SpecAugment.
-SPEC_AUG_TRAINING = False
-
 # Hidden size of LSTM layers.
 LSTM_HIDDEN_SIZE = 64
 
@@ -62,6 +59,15 @@ SAVE_MODEL_FREQUENCY = 10000
 
 # Number of steps to train.
 TRAINING_STEPS = 100000
+
+# Whether we are going to train with SpecAugment.
+SPECAUG_TRAINING = False
+
+# Parameters for SpecAugment training.
+SPECAUG_FREQ_MASK_PROB = 0.3
+SPECAUG_TIME_MASK_PROB = 0.3
+SPECAUG_FREQ_MASK_MAX_WIDTH = N_MFCC // 5
+SPECAUG_TIME_MASK_MAX_WIDTH = SEQ_LEN // 5
 
 # Number of triplets to evaluate for computing Equal Error Rate (EER).
 # Both the number of positive trials and number of negative trials will be
