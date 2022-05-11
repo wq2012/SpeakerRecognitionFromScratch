@@ -147,6 +147,8 @@ Are you ready for this challenge?
 
 I have pretrained a few models for you to play with. These models are localed under `saved_model/pretrained`.
 
+### Models trained on `train-clean-100`
+
 **saved_model.bilstm.mean.clean100.gpu100000.pt**
 
 * This is a 3-layer bi-directional LSTM model with mean frame aggregation, where hidden size is 64.
@@ -158,6 +160,15 @@ I have pretrained a few models for you to play with. These models are localed un
 
 * Everything is the same with above except that we applied SpecAugment during training.
 * Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 7.99%, and the EER threshold is 0.556.
+
+### Models trained on all LibriSpeech training data
+
+**saved_model.bilstm.mean.all.gpu100000.pt**
+
+* This is a 3-layer bi-directional LSTM model with mean frame aggregation, where hidden size is 64.
+* The training data is LibriSpeech `train-clean-100`, `train-clean-360` and `train-other-500`, which has 2338 speakers in total.
+* It has been trained on GPU for 100K steps.
+* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 8.54%, and the EER threshold is 0.659.
 
 ## Ask a question
 
