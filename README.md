@@ -149,10 +149,15 @@ I have pretrained a few models for you to play with. These models are localed un
 
 **saved_model.bilstm.mean.clean100.gpu100000.pt**
 
-* This is an bi-directional LSTM model with mean frame aggregation.
+* This is a 3-layer bi-directional LSTM model with mean frame aggregation, where hidden size is 64.
 * The training data is LibriSpeech `train-clean-100`, which has 251 speakers.
 * It has been trained on GPU for 100K steps.
-* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 8.02%, and the EER threshold is 0.52.
+* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 8.02%, and the EER threshold is 0.520.
+
+**saved_model.bilstm.mean.clean100.specaug.gpu100000.pt**
+
+* Everything is the same with above except that we applied SpecAugment during training.
+* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 7.99%, and the EER threshold is 0.556.
 
 ## Ask a question
 
