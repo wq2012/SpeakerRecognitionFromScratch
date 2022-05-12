@@ -124,7 +124,7 @@ class TestNeuralNet(unittest.TestCase):
         loss_value = loss.data.numpy().item()
         self.assertAlmostEqual(loss_value, 0)
 
-    def test_get_triplet_loss2(self):
+    def test_get_triplet_loss3(self):
         anchor = torch.tensor([0.6, 0.8])
         pos = torch.tensor([-0.8, 0.6])
         neg = torch.tensor([0.6, 0.8])
@@ -139,7 +139,7 @@ class TestNeuralNet(unittest.TestCase):
         loss_value = loss.data.numpy().item()
         self.assertAlmostEqual(loss_value, 1 + myconfig.TRIPLET_ALPHA)
 
-    def test_get_triplet_loss_from_batch_output1(self):
+    def test_get_triplet_loss_from_batch_output2(self):
         batch_output = torch.tensor(
             [[0.6, 0.8], [-0.8, 0.6], [0.6, 0.8],
              [0.6, 0.8], [-0.8, 0.6], [0.6, 0.8]])
