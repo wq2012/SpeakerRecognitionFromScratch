@@ -23,7 +23,7 @@ def run_inference(features, encoder):
         return None
     batch_input = torch.from_numpy(
         np.stack(sliding_windows)).float().to(myconfig.DEVICE)
-    batch_output = neural_net.batch_inference(batch_input, encoder)
+    batch_output = encoder(batch_input)
 
     # Aggregate the inference outputs from sliding windows.
     aggregated_output = torch.mean(batch_output, dim=0, keepdim=False).cpu()

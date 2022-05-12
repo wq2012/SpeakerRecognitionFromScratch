@@ -1,11 +1,9 @@
 import os
 import time
-from unicodedata import bidirectional
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
-import numpy as np
 import multiprocessing
 
 import dataset
@@ -25,6 +23,14 @@ class SpeakerEncoder(nn.Module):
             batch_first=True,
             bidirectional=myconfig.BI_LSTM)
 
+    def _aggregate_frames(self, batch_output):
+        """Aggregate output frames."""
+        if myconfig.FRAME_AGGREGATION_MEAN:
+            return torch.mean(
+                batch_output, dim=1, keepdim=False)
+        else:
+            return batch_output[:, -1, :]
+
     def forward(self, x):
         D = 2 if myconfig.BI_LSTM else 1
         h0 = torch.zeros(
@@ -34,7 +40,7 @@ class SpeakerEncoder(nn.Module):
             D * myconfig.LSTM_NUM_LAYERS, x.shape[0], myconfig.LSTM_HIDDEN_SIZE
         ).to(myconfig.DEVICE)
         y, (hn, cn) = self.lstm(x, (h0, c0))
-        return y
+        return self._aggregate_frames(y)
 
 
 def get_triplet_loss(anchor, pos, neg):
@@ -67,16 +73,6 @@ def save_model(saved_model_path, encoder, losses, start_time):
                saved_model_path)
 
 
-def batch_inference(batch_input, encoder):
-    """Run batch inference."""
-    if myconfig.FRAME_AGGREGATION_MEAN:
-        batch_output = torch.mean(
-            encoder(batch_input), dim=1, keepdim=False)
-    else:
-        batch_output = encoder(batch_input)[:, -1, :]
-    return batch_output
-
-
 def train_network(spk_to_utts, num_steps, saved_model=None, pool=None):
     start_time = time.time()
     losses = []
@@ -93,7 +89,7 @@ def train_network(spk_to_utts, num_steps, saved_model=None, pool=None):
             spk_to_utts, myconfig.BATCH_SIZE, pool).to(myconfig.DEVICE)
 
         # Compute loss.
-        batch_output = batch_inference(batch_input, encoder)
+        batch_output = encoder(batch_input)
         loss = get_triplet_loss_from_batch_output(
             batch_output, myconfig.BATCH_SIZE)
         loss.backward()
