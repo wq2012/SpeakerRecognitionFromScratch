@@ -13,7 +13,7 @@ import myconfig
 
 class SpeakerEncoder(nn.Module):
 
-    def __init__(self):
+    def __init__(self, saved_model=""):
         super(SpeakerEncoder, self).__init__()
         # Define the LSTM network.
         self.lstm = nn.LSTM(
@@ -22,6 +22,14 @@ class SpeakerEncoder(nn.Module):
             num_layers=myconfig.LSTM_NUM_LAYERS,
             batch_first=True,
             bidirectional=myconfig.BI_LSTM)
+
+        # Load from a saved model if provided.
+        if saved_model:
+            self._load_from(saved_model)
+
+    def _load_from(self, saved_model):
+        var_dict = torch.load(saved_model, map_location=myconfig.DEVICE)
+        self.load_state_dict(var_dict["encoder_state_dict"])
 
     def _aggregate_frames(self, batch_output):
         """Aggregate output frames."""
@@ -67,6 +75,8 @@ def save_model(saved_model_path, encoder, losses, start_time):
     """Save model to disk."""
     training_time = time.time() - start_time
     os.makedirs(os.path.dirname(saved_model_path), exist_ok=True)
+    if not saved_model_path.endswith(".pt"):
+        saved_model_path += ".pt"
     torch.save({"encoder_state_dict": encoder.state_dict(),
                 "losses": losses,
                 "training_time": training_time},
@@ -99,7 +109,11 @@ def train_network(spk_to_utts, num_steps, saved_model=None, pool=None):
 
         if (saved_model is not None and
                 (step + 1) % myconfig.SAVE_MODEL_FREQUENCY == 0):
-            save_model(saved_model + "-" + str(step + 1),
+            checkpoint = saved_model
+            if checkpoint.endswith(".pt"):
+                checkpoint = checkpoint[:-3]
+            checkpoint += ".ckpt-" + str(step + 1) + ".pt"
+            save_model(checkpoint,
                        encoder, losses, start_time)
 
     training_time = time.time() - start_time

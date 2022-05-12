@@ -8,14 +8,6 @@ import neural_net
 import myconfig
 
 
-def load_saved_model(saved_model):
-    """Load the saved model."""
-    encoder = neural_net.SpeakerEncoder().to(myconfig.DEVICE)
-    var_dict = torch.load(saved_model, map_location=myconfig.DEVICE)
-    encoder.load_state_dict(var_dict["encoder_state_dict"])
-    return encoder
-
-
 def run_inference(features, encoder):
     """Get the embedding of an utterance using the encoder."""
     sliding_windows = feature_extraction.extract_sliding_windows(features)
@@ -114,7 +106,8 @@ def run_eval():
         spk_to_utts = dataset.get_librispeech_spk_to_utts(
             myconfig.TEST_DATA_DIR)
         print("Evaluation data:", myconfig.TEST_DATA_DIR)
-    encoder = load_saved_model(myconfig.SAVED_MODEL_PATH)
+    encoder = neural_net.SpeakerEncoder(
+        myconfig.SAVED_MODEL_PATH).to(myconfig.DEVICE)
     labels, scores = compute_scores(
         encoder, spk_to_utts, myconfig.NUM_EVAL_TRIPLETS)
     eer, eer_threshold = compute_eer(labels, scores)
