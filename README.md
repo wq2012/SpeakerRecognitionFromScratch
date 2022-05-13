@@ -179,6 +179,11 @@ I have pretrained a few models for you to play with. These models are localed un
 * It has been trained on GPU for 100K steps.
 * Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 8.54%, and the EER threshold is 0.659.
 
+**saved_model.bilstm.mean.all.specaug.gpu100000.pt**
+
+* Everything is the same with above except that we applied SpecAugment during training.
+* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 6.89%, and the EER threshold is 0.673.
+
 ## Ask a question
 
 Please use the **Q&A** board on [Udemy](https://www.udemy.com/course/speaker-recognition/?referralCode=1914766AF241CE15D19A) to ask me questions.
