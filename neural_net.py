@@ -81,6 +81,14 @@ class TransformerSpeakerEncoder(BaseSpeakerEncoder):
         return output[:, 0, :]
 
 
+def get_speaker_encoder(load_from=""):
+    """Create speaker encoder model or load it from a saved model."""
+    if myconfig.USE_TRANSFORMER:
+        return TransformerSpeakerEncoder(load_from).to(myconfig.DEVICE)
+    else:
+        return LstmSpeakerEncoder(load_from).to(myconfig.DEVICE)
+
+
 def get_triplet_loss(anchor, pos, neg):
     """Triplet loss defined in https://arxiv.org/pdf/1705.02304.pdf."""
     cos = nn.CosineSimilarity(dim=-1, eps=1e-6)
@@ -116,10 +124,7 @@ def save_model(saved_model_path, encoder, losses, start_time):
 def train_network(spk_to_utts, num_steps, saved_model=None, pool=None):
     start_time = time.time()
     losses = []
-    if myconfig.USE_TRANSFORMER:
-        encoder = TransformerSpeakerEncoder().to(myconfig.DEVICE)
-    else:
-        encoder = LstmSpeakerEncoder().to(myconfig.DEVICE)
+    encoder = get_speaker_encoder()
 
     # Train
     optimizer = optim.Adam(encoder.parameters(), lr=myconfig.LEARNING_RATE)

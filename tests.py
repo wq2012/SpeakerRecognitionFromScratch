@@ -176,7 +176,8 @@ class TestEvaluation(unittest.TestCase):
     def setUp(self):
         myconfig.BI_LSTM = False
         myconfig.FRAME_AGGREGATION_MEAN = False
-        self.encoder = neural_net.LstmSpeakerEncoder().to(myconfig.DEVICE)
+        myconfig.USE_TRANSFORMER = False
+        self.encoder = neural_net.get_speaker_encoder().to(myconfig.DEVICE)
         self.spk_to_utts = dataset.get_librispeech_spk_to_utts(
             myconfig.TEST_DATA_DIR)
 
@@ -189,7 +190,8 @@ class TestEvaluation(unittest.TestCase):
     def test_run_bilstm_inference(self):
         myconfig.BI_LSTM = True
         myconfig.FRAME_AGGREGATION_MEAN = True
-        self.encoder = neural_net.LstmSpeakerEncoder().to(myconfig.DEVICE)
+        myconfig.USE_TRANSFORMER = False
+        self.encoder = neural_net.get_speaker_encoder().to(myconfig.DEVICE)
         features = feature_extraction.extract_features(os.path.join(
             myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
         embedding = evaluation.run_inference(features, self.encoder)

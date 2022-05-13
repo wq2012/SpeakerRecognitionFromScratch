@@ -108,12 +108,8 @@ def run_eval():
         spk_to_utts = dataset.get_librispeech_spk_to_utts(
             myconfig.TEST_DATA_DIR)
         print("Evaluation data:", myconfig.TEST_DATA_DIR)
-    if myconfig.USE_TRANSFORMER:
-        encoder = neural_net.TransformerSpeakerEncoder(
-            myconfig.SAVED_MODEL_PATH).to(myconfig.DEVICE)
-    else:
-        encoder = neural_net.LstmSpeakerEncoder(
-            myconfig.SAVED_MODEL_PATH).to(myconfig.DEVICE)
+    encoder = neural_net.get_speaker_encoder(
+        myconfig.SAVED_MODEL_PATH)
     labels, scores = compute_scores(
         encoder, spk_to_utts, myconfig.NUM_EVAL_TRIPLETS)
     eer, eer_threshold = compute_eer(labels, scores)
