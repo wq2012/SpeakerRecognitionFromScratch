@@ -11,10 +11,10 @@ import feature_extraction
 import myconfig
 
 
-class SpeakerEncoder(nn.Module):
+class LstmSpeakerEncoder(nn.Module):
 
     def __init__(self, saved_model=""):
-        super(SpeakerEncoder, self).__init__()
+        super(LstmSpeakerEncoder, self).__init__()
         # Define the LSTM network.
         self.lstm = nn.LSTM(
             input_size=myconfig.N_MFCC,
@@ -86,7 +86,7 @@ def save_model(saved_model_path, encoder, losses, start_time):
 def train_network(spk_to_utts, num_steps, saved_model=None, pool=None):
     start_time = time.time()
     losses = []
-    encoder = SpeakerEncoder().to(myconfig.DEVICE)
+    encoder = LstmSpeakerEncoder().to(myconfig.DEVICE)
 
     # Train
     optimizer = optim.Adam(encoder.parameters(), lr=myconfig.LEARNING_RATE)
