@@ -149,14 +149,23 @@ class TestNeuralNet(unittest.TestCase):
         self.assertAlmostEqual(loss_value, 1 + myconfig.TRIPLET_ALPHA)
 
     def test_train_unilstm_network(self):
+        myconfig.USE_TRANSFORMER = False
         myconfig.BI_LSTM = False
         myconfig.FRAME_AGGREGATION_MEAN = False
         losses = neural_net.train_network(self.spk_to_utts, num_steps=2)
         self.assertEqual(len(losses), 2)
 
     def test_train_bilstm_network(self):
+        myconfig.USE_TRANSFORMER = False
         myconfig.BI_LSTM = True
         myconfig.FRAME_AGGREGATION_MEAN = True
+        with multiprocessing.Pool(myconfig.NUM_PROCESSES) as pool:
+            losses = neural_net.train_network(
+                self.spk_to_utts, num_steps=2, pool=pool)
+        self.assertEqual(len(losses), 2)
+
+    def test_train_transformer_network(self):
+        myconfig.USE_TRANSFORMER = True
         with multiprocessing.Pool(myconfig.NUM_PROCESSES) as pool:
             losses = neural_net.train_network(
                 self.spk_to_utts, num_steps=2, pool=pool)

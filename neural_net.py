@@ -11,7 +11,13 @@ import feature_extraction
 import myconfig
 
 
-class LstmSpeakerEncoder(nn.Module):
+class BaseSpeakerEncoder(nn.Module):
+    def _load_from(self, saved_model):
+        var_dict = torch.load(saved_model, map_location=myconfig.DEVICE)
+        self.load_state_dict(var_dict["encoder_state_dict"])
+
+
+class LstmSpeakerEncoder(BaseSpeakerEncoder):
 
     def __init__(self, saved_model=""):
         super(LstmSpeakerEncoder, self).__init__()
@@ -26,10 +32,6 @@ class LstmSpeakerEncoder(nn.Module):
         # Load from a saved model if provided.
         if saved_model:
             self._load_from(saved_model)
-
-    def _load_from(self, saved_model):
-        var_dict = torch.load(saved_model, map_location=myconfig.DEVICE)
-        self.load_state_dict(var_dict["encoder_state_dict"])
 
     def _aggregate_frames(self, batch_output):
         """Aggregate output frames."""
@@ -49,6 +51,34 @@ class LstmSpeakerEncoder(nn.Module):
         ).to(myconfig.DEVICE)
         y, (hn, cn) = self.lstm(x, (h0, c0))
         return self._aggregate_frames(y)
+
+
+class TransformerSpeakerEncoder(BaseSpeakerEncoder):
+
+    def __init__(self, saved_model=""):
+        super(TransformerSpeakerEncoder, self).__init__()
+        # Define the Transformer network.
+        self.linear_layer = nn.Linear(myconfig.N_MFCC, myconfig.TRANSFORMER_DIM)
+        self.encoder = nn.TransformerEncoder(nn.TransformerEncoderLayer(
+            d_model=myconfig.TRANSFORMER_DIM, nhead=myconfig.TRANSFORMER_HEADS,
+            batch_first=True),
+            num_layers=myconfig.TRANSFORMER_ENCODER_LAYERS)
+        self.decoder = nn.TransformerDecoder(nn.TransformerDecoderLayer(
+            d_model=myconfig.TRANSFORMER_DIM, nhead=myconfig.TRANSFORMER_HEADS,
+            batch_first=True),
+            num_layers=1)
+
+        # Load from a saved model if provided.
+        if saved_model:
+            self._load_from(saved_model)
+
+    def forward(self, x):
+        encoder_input = torch.sigmoid(self.linear_layer(x))
+        encoder_output = self.encoder(encoder_input)
+        tgt = torch.zeros(x.shape[0], 1, myconfig.TRANSFORMER_DIM).to(
+            myconfig.DEVICE)
+        output = self.decoder(tgt, encoder_output)
+        return output[:, 0, :]
 
 
 def get_triplet_loss(anchor, pos, neg):
@@ -86,7 +116,10 @@ def save_model(saved_model_path, encoder, losses, start_time):
 def train_network(spk_to_utts, num_steps, saved_model=None, pool=None):
     start_time = time.time()
     losses = []
-    encoder = LstmSpeakerEncoder().to(myconfig.DEVICE)
+    if myconfig.USE_TRANSFORMER:
+        encoder = TransformerSpeakerEncoder().to(myconfig.DEVICE)
+    else:
+        encoder = LstmSpeakerEncoder().to(myconfig.DEVICE)
 
     # Train
     optimizer = optim.Adam(encoder.parameters(), lr=myconfig.LEARNING_RATE)
@@ -117,7 +150,7 @@ def train_network(spk_to_utts, num_steps, saved_model=None, pool=None):
                        encoder, losses, start_time)
 
     training_time = time.time() - start_time
-    print("finished training in", training_time, "seconds")
+    print("Finished training in", training_time, "seconds")
     if saved_model is not None:
         save_model(saved_model, encoder, losses, start_time)
     return losses

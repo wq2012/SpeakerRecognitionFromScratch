@@ -39,6 +39,18 @@ BI_LSTM = True
 # if true, use mean frame of LSTM inference as aggregated output.
 FRAME_AGGREGATION_MEAN = True
 
+# If true, we use transformer instead of LSTM.
+USE_TRANSFORMER = False
+
+# Dimension of transformer layers.
+TRANSFORMER_DIM = 32
+
+# Number of encoder layers for transformer
+TRANSFORMER_ENCODER_LAYERS = 2
+
+# Number of heads in transformer layers.
+TRANSFORMER_HEADS = 8
+
 # Sequence length of the sliding window for LSTM.
 SEQ_LEN = 100  # 3.2 seconds
 

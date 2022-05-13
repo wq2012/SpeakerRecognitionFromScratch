@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import multiprocessing
+import time
 
 import dataset
 import feature_extraction
@@ -98,6 +99,7 @@ def compute_eer(labels, scores):
 
 def run_eval():
     """Run evaluation of the saved model on test data."""
+    start_time = time.time()
     if myconfig.TEST_DATA_CSV:
         spk_to_utts = dataset.get_csv_spk_to_utts(
             myconfig.TEST_DATA_CSV)
@@ -106,11 +108,17 @@ def run_eval():
         spk_to_utts = dataset.get_librispeech_spk_to_utts(
             myconfig.TEST_DATA_DIR)
         print("Evaluation data:", myconfig.TEST_DATA_DIR)
-    encoder = neural_net.LstmSpeakerEncoder(
-        myconfig.SAVED_MODEL_PATH).to(myconfig.DEVICE)
+    if myconfig.USE_TRANSFORMER:
+        encoder = neural_net.TransformerSpeakerEncoder(
+            myconfig.SAVED_MODEL_PATH).to(myconfig.DEVICE)
+    else:
+        encoder = neural_net.LstmSpeakerEncoder(
+            myconfig.SAVED_MODEL_PATH).to(myconfig.DEVICE)
     labels, scores = compute_scores(
         encoder, spk_to_utts, myconfig.NUM_EVAL_TRIPLETS)
     eer, eer_threshold = compute_eer(labels, scores)
+    eval_time = time.time() - start_time
+    print("Finished evaluation in", eval_time, "seconds")
     print("eer_threshold =", eer_threshold, "eer =", eer)
 
 
