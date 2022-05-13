@@ -54,9 +54,6 @@ TRANSFORMER_HEADS = 8
 # Sequence length of the sliding window for LSTM.
 SEQ_LEN = 100  # 3.2 seconds
 
-# Sliding window step for LSTM inference.
-SLIDING_WINDOW_STEP = 50  # 1.6 seconds
-
 # Alpha for the triplet loss.
 TRIPLET_ALPHA = 0.1
 
@@ -80,6 +77,12 @@ SPECAUG_FREQ_MASK_PROB = 0.3
 SPECAUG_TIME_MASK_PROB = 0.3
 SPECAUG_FREQ_MASK_MAX_WIDTH = N_MFCC // 5
 SPECAUG_TIME_MASK_MAX_WIDTH = SEQ_LEN // 5
+
+# Whether to use full sequence inference or sliding window inference.
+USE_FULL_SEQUENCE_INFERENCE = False
+
+# Sliding window step for sliding window inference.
+SLIDING_WINDOW_STEP = 50  # 1.6 seconds
 
 # Number of triplets to evaluate for computing Equal Error Rate (EER).
 # Both the number of positive trials and number of negative trials will be

@@ -182,6 +182,10 @@ class TestEvaluation(unittest.TestCase):
             myconfig.TEST_DATA_DIR)
 
     def test_run_unilstm_inference(self):
+        myconfig.BI_LSTM = False
+        myconfig.FRAME_AGGREGATION_MEAN = False
+        myconfig.USE_TRANSFORMER = False
+        myconfig.USE_FULL_SEQUENCE_INFERENCE = False
         features = feature_extraction.extract_features(os.path.join(
             myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
         embedding = evaluation.run_inference(features, self.encoder)
@@ -191,6 +195,18 @@ class TestEvaluation(unittest.TestCase):
         myconfig.BI_LSTM = True
         myconfig.FRAME_AGGREGATION_MEAN = True
         myconfig.USE_TRANSFORMER = False
+        myconfig.USE_FULL_SEQUENCE_INFERENCE = False
+        self.encoder = neural_net.get_speaker_encoder().to(myconfig.DEVICE)
+        features = feature_extraction.extract_features(os.path.join(
+            myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))
+        embedding = evaluation.run_inference(features, self.encoder)
+        self.assertEqual(embedding.shape, (2 * myconfig.LSTM_HIDDEN_SIZE,))
+
+    def test_run_bilstm_full_sequence_inference(self):
+        myconfig.BI_LSTM = True
+        myconfig.FRAME_AGGREGATION_MEAN = True
+        myconfig.USE_TRANSFORMER = False
+        myconfig.USE_FULL_SEQUENCE_INFERENCE = True
         self.encoder = neural_net.get_speaker_encoder().to(myconfig.DEVICE)
         features = feature_extraction.extract_features(os.path.join(
             myconfig.TEST_DATA_DIR, "61/70968/61-70968-0000.flac"))

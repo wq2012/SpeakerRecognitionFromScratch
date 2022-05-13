@@ -155,20 +155,20 @@ I have pretrained a few models for you to play with. These models are localed un
 * The training data is LibriSpeech `train-clean-100`, which has 251 speakers.
 * Using triplet loss with alpha=0.1.
 * It has been trained on GPU for 100K steps.
-* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 8.02%, and the EER threshold is 0.520.
+* Evaluated on 10K triplets from LibriSpeech `test-clean` with sliding window inference, EER is 8.02%, and the EER threshold is 0.520.
 
 **saved_model.bilstm.mean.clean100.specaug.gpu100000.pt**
 
 * Everything is the same with above except that we applied SpecAugment during training.
-* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 7.89%, and the EER threshold is 0.619.
+* Evaluated on 10K triplets from LibriSpeech `test-clean` with sliding window inference, EER is 7.89%, and the EER threshold is 0.619.
 
 **saved_model.transformer.clean100.specaug.gpu100000.pt**
 
 * This is a transformer model, where encoder/decoder dimension is 32, with 2 encoder layers, 1 decoder layer, and 8 heads.
-* The training data is LibriSpeech `train-clean-100`, which has 251 speakers.
+* The training data is LibriSpeech `train-clean-100` with sliding window inference, which has 251 speakers.
 * Using triplet loss with alpha=0.1.
 * It has been trained on GPU for 100K steps.
-* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 9.81%, and the EER threshold is 0.753.
+* Evaluated on 10K triplets from LibriSpeech `test-clean` with sliding window inference, EER is 9.81%, and the EER threshold is 0.753.
 
 ### Models trained on all LibriSpeech training data
 
@@ -177,12 +177,12 @@ I have pretrained a few models for you to play with. These models are localed un
 * This is a 3-layer bi-directional LSTM model with mean frame aggregation, where hidden size is 64.
 * The training data is LibriSpeech `train-clean-100`, `train-clean-360` and `train-other-500`, which has 2338 speakers in total.
 * It has been trained on GPU for 100K steps.
-* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 8.54%, and the EER threshold is 0.659.
+* Evaluated on 10K triplets from LibriSpeech `test-clean` with sliding window inference, EER is 8.54%, and the EER threshold is 0.659.
 
 **saved_model.bilstm.mean.all.specaug.gpu100000.pt**
 
 * Everything is the same with above except that we applied SpecAugment during training.
-* Evaluated on 10K triplets from LibriSpeech `test-clean`, EER is 6.89%, and the EER threshold is 0.673.
+* Evaluated on 10K triplets from LibriSpeech `test-clean` with sliding window inference, EER is 6.89%, and the EER threshold is 0.673.
 
 ## Ask a question
 

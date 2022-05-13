@@ -9,18 +9,27 @@ import neural_net
 import myconfig
 
 
-def run_inference(features, encoder):
+def run_inference(features, encoder,
+                  full_sequence=myconfig.USE_FULL_SEQUENCE_INFERENCE):
     """Get the embedding of an utterance using the encoder."""
-    sliding_windows = feature_extraction.extract_sliding_windows(features)
-    if not sliding_windows:
-        return None
-    batch_input = torch.from_numpy(
-        np.stack(sliding_windows)).float().to(myconfig.DEVICE)
-    batch_output = encoder(batch_input)
+    if full_sequence:
+        # Full sequence inference.
+        batch_input = torch.unsqueeze(torch.from_numpy(
+            features), dim=0).float().to(myconfig.DEVICE)
+        batch_output = encoder(batch_input)
+        return batch_output[0, :].cpu().data.numpy()
+    else:
+        # Sliding window inference.
+        sliding_windows = feature_extraction.extract_sliding_windows(features)
+        if not sliding_windows:
+            return None
+        batch_input = torch.from_numpy(
+            np.stack(sliding_windows)).float().to(myconfig.DEVICE)
+        batch_output = encoder(batch_input)
 
-    # Aggregate the inference outputs from sliding windows.
-    aggregated_output = torch.mean(batch_output, dim=0, keepdim=False).cpu()
-    return aggregated_output.data.numpy()
+        # Aggregate the inference outputs from sliding windows.
+        aggregated_output = torch.mean(batch_output, dim=0, keepdim=False).cpu()
+        return aggregated_output.data.numpy()
 
 
 def cosine_similarity(a, b):
