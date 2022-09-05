@@ -2,11 +2,11 @@
 
 ## Overview
 
-This is the reference code for the final project of the [Speaker Recognition course on Udemy](https://www.udemy.com/course/speaker-recognition/?referralCode=1914766AF241CE15D19A).
+This is the reference code for the final project of the Speaker Recognition course on [Udemy](https://www.udemy.com/course/speaker-recognition/?referralCode=1914766AF241CE15D19A), [机器之心](https://jmq.xet.tech/s/4j70ZU), [深蓝学院](https://www.shenlanxueyuan.com/course/513) and [语音之家](https://appzxw56sw27444.h5.xiaoeknow.com/v1/goods/goods_detail/course_2CvsdnvhxVu65E81X2TcMFlXKWQ).
 
 [![image](resources/course_screenshot.png)](https://www.udemy.com/course/speaker-recognition/?referralCode=1914766AF241CE15D19A)
 
-In this project, we will build an LSTM-based speaker recognition system from scratch.
+In this project, we will build an LSTM-based or Transformer-based speaker recognition system from scratch.
 
 We will train the neural network on [LibriSpeech](https://www.openslr.org/12), and evaluate the Equal Error Rate (EER).
 
@@ -44,7 +44,7 @@ If you are still clueless after trying hard, then don't worry, this library serv
 
 ### Download the data
 
-Go to the [OpenSLR website](https://www.openslr.org/12), and download LibriSpeech datasets.
+Go to the [OpenSLR website](https://www.openslr.org/12), and download LibriSpeech datasets. If you want the download to be fast, make sure you use the right mirror: US for north America, EU for Europe, CN for China/Asia.
 
 For simplicity, we will start with the smallest training set and test set, e.g. `train-clean-100.tar.gz` and `test-clean.tar.gz`.
 
@@ -186,6 +186,6 @@ I have pretrained a few models for you to play with. These models are localed un
 
 ## Ask a question
 
-Please use the **Q&A** board on [Udemy](https://www.udemy.com/course/speaker-recognition/?referralCode=1914766AF241CE15D19A) to ask me questions.
+Please use the **Q&A** board on [Udemy](https://www.udemy.com/course/speaker-recognition/?referralCode=1914766AF241CE15D19A) or other course platforms / WeChat groups to ask me questions.
 
 I will NOT directly respond to emails or GitHub issues.
