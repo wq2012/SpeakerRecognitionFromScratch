@@ -15,7 +15,7 @@ def extract_features(audio_file):
 
     # Convert to mono-channel.
     if len(waveform.shape) == 2:
-        waveform = librosa.to_mono(waveform)
+        waveform = librosa.to_mono(waveform.transpose())
 
     # Convert to 16kHz.
     if sample_rate != 16000:
