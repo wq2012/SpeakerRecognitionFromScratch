@@ -40,6 +40,7 @@ If you are still clueless after trying hard, then don't worry, this library serv
 * `specaug.py`: code for SpecAugment
 * `neural_net.py`: code for building neural networks and training with PyTorch
 * `evaluation.py`: code for inference and evaluation
+* `generate_csv.py`: a utility script to generate a CSV file to represent a dataset
 * `tests.py`: unit tests
 
 ### Download the data
