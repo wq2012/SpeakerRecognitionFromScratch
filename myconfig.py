@@ -15,7 +15,7 @@ TEST_DATA_DIR = os.path.join(
 # utterance file.
 # These will allow you to train/evaluate using other datasets than LibriSpeech.
 # If given, TRAIN_DATA_DIR and/or TEST_DATA_DIR will be ignored.
-TRAIN_DATA_CSV = "/home/quan/GitHub/SpeakerRecognitionFromScratch/CN-Celeb.csv"
+TRAIN_DATA_CSV = ""
 TEST_DATA_CSV = ""
 
 # Path of save model.
