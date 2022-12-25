@@ -6,10 +6,10 @@ import multiprocessing
 # Paths of downloaded LibriSpeech datasets.
 TRAIN_DATA_DIR = os.path.join(
     os.path.expanduser("~"),
-    "Code/github/SpeakerRecognitionFromScratch/data/LibriSpeech/train-clean-100")
+    "GitHub/SpeakerRecognitionFromScratch/data/LibriSpeech/train-clean-100")
 TEST_DATA_DIR = os.path.join(
     os.path.expanduser("~"),
-    "Code/github/SpeakerRecognitionFromScratch/data/LibriSpeech/test-clean")
+    "GitHub/SpeakerRecognitionFromScratch/data/LibriSpeech/test-clean")
 
 # Paths of CSV files where the first column is speaker, and the second column is
 # utterance file.
@@ -21,7 +21,7 @@ TEST_DATA_CSV = ""
 # Path of save model.
 SAVED_MODEL_PATH = os.path.join(
     os.path.expanduser("~"),
-    "Code/github/SpeakerRecognitionFromScratch/saved_model/saved_model.pt")
+    "GitHub/SpeakerRecognitionFromScratch/saved_model/saved_model.pt")
 
 # Number of MFCCs for librosa.feature.mfcc.
 N_MFCC = 40
