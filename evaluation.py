@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-import multiprocessing
+from multiprocessing.pool import ThreadPool
 import time
 
 import dataset
@@ -71,7 +71,7 @@ def compute_scores(encoder, spk_to_utts, num_eval_triplets=myconfig.NUM_EVAL_TRI
     scores = []
     fetcher = TripletScoreFetcher(spk_to_utts, encoder, num_eval_triplets)
     # CUDA does not support multi-processing, so using a ThreadPool.
-    with multiprocessing.pool.ThreadPool(myconfig.NUM_PROCESSES) as pool:
+    with ThreadPool(myconfig.NUM_PROCESSES) as pool:
         while num_eval_triplets > len(labels) // 2:
             label_score_pairs = pool.map(fetcher, range(
                 len(labels) // 2, num_eval_triplets))
