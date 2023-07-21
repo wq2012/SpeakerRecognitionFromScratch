@@ -12,6 +12,8 @@ We will train the neural network on [LibriSpeech](https://www.openslr.org/12), a
 
 The system is built on top of [PyTorch](https://pytorch.org/tutorials/) and [librosa](https://librosa.org/doc/latest/index.html) - we have already learned both in the course.
 
+If you prefer [JAX](https://jax.readthedocs.io) and [Flax](https://flax.readthedocs.io) over PyTorch, you can use this library instead: https://github.com/wq2012/FlaxSpeaker
+
 ## Disclaimers
 
 The purpose of this project is to build a **minimal working system** using simple Python code, to help students learn the basic concepts. Many details have been largely simplified to make the code easier to understand.
