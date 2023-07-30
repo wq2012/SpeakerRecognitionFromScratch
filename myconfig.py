@@ -4,15 +4,12 @@ import torch
 import multiprocessing
 
 # Paths of downloaded LibriSpeech datasets.
-# TRAIN_DATA_DIR = os.path.join(
-#     os.path.expanduser("~"),
-#     "GitHub/SpeakerRecognitionFromScratch/data/LibriSpeech/train-clean-100")
-# TEST_DATA_DIR = os.path.join(
-#     os.path.expanduser("~"),
-#     "GitHub/SpeakerRecognitionFromScratch/data/LibriSpeech/test-clean")
-
-TRAIN_DATA_DIR = "/mnt/e/Research/Data/LibriSpeech/train-clean-100"
-TEST_DATA_DIR = "/mnt/e/Research/Data/LibriSpeech/test-clean"
+TRAIN_DATA_DIR = os.path.join(
+    os.path.expanduser("~"),
+    "GitHub/SpeakerRecognitionFromScratch/data/LibriSpeech/train-clean-100")
+TEST_DATA_DIR = os.path.join(
+    os.path.expanduser("~"),
+    "GitHub/SpeakerRecognitionFromScratch/data/LibriSpeech/test-clean")
 
 # Paths of CSV files where the first column is speaker, and the second column is
 # utterance file.
