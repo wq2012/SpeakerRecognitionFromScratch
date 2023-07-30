@@ -2,6 +2,7 @@ import torch
 import numpy as np
 from multiprocessing.pool import ThreadPool
 import time
+import functools
 
 import dataset
 import feature_extraction
@@ -37,39 +38,36 @@ def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
 
-class TripletScoreFetcher:
-    """Class for computing triplet scores with multi-processing."""
-
-    def __init__(self, spk_to_utts, encoder, num_eval_triplets):
-        self.spk_to_utts = spk_to_utts
-        self.encoder = encoder
-        self.num_eval_triplets = num_eval_triplets
-
-    def __call__(self, i):
-        """Get the labels and scores from a triplet."""
-        anchor, pos, neg = feature_extraction.get_triplet_features(
-            self.spk_to_utts)
-        anchor_embedding = run_inference(anchor, self.encoder)
-        pos_embedding = run_inference(pos, self.encoder)
-        neg_embedding = run_inference(neg, self.encoder)
-        if ((anchor_embedding is None) or
-            (pos_embedding is None) or
-                (neg_embedding is None)):
-            # Some utterances might be smaller than a single sliding window.
-            return ([], [])
-        triplet_labels = [1, 0]
-        triplet_scores = [
-            cosine_similarity(anchor_embedding, pos_embedding),
-            cosine_similarity(anchor_embedding, neg_embedding)]
-        print("triplets evaluated:", i, "/", self.num_eval_triplets)
-        return (triplet_labels, triplet_scores)
+def compute_single_triplet_scores(i, spk_to_utts, encoder, num_eval_triplets):
+    """Get the labels and scores from a single triplet."""
+    anchor, pos, neg = feature_extraction.get_triplet_features(
+        spk_to_utts)
+    anchor_embedding = run_inference(anchor, encoder)
+    pos_embedding = run_inference(pos, encoder)
+    neg_embedding = run_inference(neg, encoder)
+    if ((anchor_embedding is None) or
+        (pos_embedding is None) or
+            (neg_embedding is None)):
+        # Some utterances might be smaller than a single sliding window.
+        return ([], [])
+    triplet_labels = [1, 0]
+    triplet_scores = [
+        cosine_similarity(anchor_embedding, pos_embedding),
+        cosine_similarity(anchor_embedding, neg_embedding)]
+    print("triplets evaluated:", i, "/", num_eval_triplets)
+    return (triplet_labels, triplet_scores)
 
 
-def compute_scores(encoder, spk_to_utts, num_eval_triplets=myconfig.NUM_EVAL_TRIPLETS):
+def compute_scores(encoder,
+                   spk_to_utts,
+                   num_eval_triplets=myconfig.NUM_EVAL_TRIPLETS):
     """Compute cosine similarity scores from testing data."""
     labels = []
     scores = []
-    fetcher = TripletScoreFetcher(spk_to_utts, encoder, num_eval_triplets)
+    fetcher = functools.partial(compute_single_triplet_scores,
+                                spk_to_utts=spk_to_utts,
+                                encoder=encoder,
+                                num_eval_triplets=num_eval_triplets)
     # CUDA does not support multi-processing, so using a ThreadPool.
     with ThreadPool(myconfig.NUM_PROCESSES) as pool:
         while num_eval_triplets > len(labels) // 2:

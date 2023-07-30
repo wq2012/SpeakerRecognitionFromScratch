@@ -3,6 +3,7 @@ import soundfile as sf
 import random
 import torch
 import numpy as np
+import functools
 
 import myconfig
 import dataset
@@ -54,27 +55,22 @@ def trim_features(features, apply_specaug):
     return trimmed_features
 
 
-class TrimmedTripletFeaturesFetcher:
-    """The fetcher of trimmed features for multi-processing."""
-
-    def __init__(self, spk_to_utts):
-        self.spk_to_utts = spk_to_utts
-
-    def __call__(self, _):
-        """Get a triplet of trimmed anchor/pos/neg features."""
-        anchor, pos, neg = get_triplet_features(self.spk_to_utts)
-        while (anchor.shape[0] < myconfig.SEQ_LEN or
-               pos.shape[0] < myconfig.SEQ_LEN or
-               neg.shape[0] < myconfig.SEQ_LEN):
-            anchor, pos, neg = get_triplet_features(self.spk_to_utts)
-        return np.stack([trim_features(anchor, myconfig.SPECAUG_TRAINING),
-                         trim_features(pos, myconfig.SPECAUG_TRAINING),
-                         trim_features(neg, myconfig.SPECAUG_TRAINING)])
+def get_trimmed_triple_features(_, spk_to_utts):
+    """Get a triplet of trimmed anchor/pos/neg features."""
+    anchor, pos, neg = get_triplet_features(spk_to_utts)
+    while (anchor.shape[0] < myconfig.SEQ_LEN or
+            pos.shape[0] < myconfig.SEQ_LEN or
+            neg.shape[0] < myconfig.SEQ_LEN):
+        anchor, pos, neg = get_triplet_features(spk_to_utts)
+    return np.stack([trim_features(anchor, myconfig.SPECAUG_TRAINING),
+                        trim_features(pos, myconfig.SPECAUG_TRAINING),
+                        trim_features(neg, myconfig.SPECAUG_TRAINING)])
 
 
 def get_batched_triplet_input(spk_to_utts, batch_size, pool=None):
     """Get batched triplet input for PyTorch."""
-    fetcher = TrimmedTripletFeaturesFetcher(spk_to_utts)
+    fetcher = functools.partial(get_trimmed_triple_features,
+                                spk_to_utts=spk_to_utts)
     if pool is None:
         input_arrays = list(map(fetcher, range(batch_size)))
     else:

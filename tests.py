@@ -4,6 +4,7 @@ import unittest
 import numpy as np
 import multiprocessing
 import tempfile
+import functools
 
 import dataset
 import specaug
@@ -86,8 +87,9 @@ class TestFeatureExtraction(unittest.TestCase):
         self.assertEqual(myconfig.N_MFCC, neg.shape[1])
 
     def test_get_triplet_features_trimmed(self):
-        fetcher = feature_extraction.TrimmedTripletFeaturesFetcher(
-            self.spk_to_utts)
+        fetcher = functools.partial(
+            feature_extraction.get_trimmed_triple_features,
+            spk_to_utts=self.spk_to_utts)
         fetched = fetcher(None)
         anchor = fetched[0, :, :]
         pos = fetched[1, :, :]
