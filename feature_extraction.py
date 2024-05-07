@@ -22,7 +22,7 @@ def extract_features(audio_file):
 
     # Convert to 16kHz.
     if sample_rate != SAMPLE_RATE:
-        waveform = librosa.resample(waveform, sample_rate, 16000)
+        waveform = librosa.resample(waveform, sample_rate, SAMPLE_RATE)
 
     features = librosa.feature.mfcc(
         y=waveform, sr=SAMPLE_RATE, n_mfcc=myconfig.N_MFCC)
