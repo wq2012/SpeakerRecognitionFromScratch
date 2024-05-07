@@ -10,6 +10,8 @@ import dataset
 import specaug
 
 
+SAMPLE_RATE = 16000
+
 def extract_features(audio_file):
     """Extract MFCC features from an audio file, shape=(TIME, MFCC)."""
     waveform, sample_rate = sf.read(audio_file)
@@ -19,11 +21,11 @@ def extract_features(audio_file):
         waveform = librosa.to_mono(waveform.transpose())
 
     # Convert to 16kHz.
-    if sample_rate != 16000:
+    if sample_rate != SAMPLE_RATE:
         waveform = librosa.resample(waveform, sample_rate, 16000)
 
     features = librosa.feature.mfcc(
-        y=waveform, sr=sample_rate, n_mfcc=myconfig.N_MFCC)
+        y=waveform, sr=SAMPLE_RATE, n_mfcc=myconfig.N_MFCC)
     return features.transpose()
 
 
