@@ -9,8 +9,8 @@ import myconfig
 import dataset
 import specaug
 
-
 SAMPLE_RATE = 16000
+
 
 def extract_features(audio_file):
     """Extract MFCC features from an audio file, shape=(TIME, MFCC)."""
